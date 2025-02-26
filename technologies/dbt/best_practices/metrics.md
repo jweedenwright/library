@@ -1,4 +1,4 @@
-# dbt (Data Build Tool) Best Practices - Metrics
+# dbt (Data Build Tool) Best Practices - Metrics / Semantic Layer
 
 - [Back to Table of Contents](toc.md)
 
@@ -15,7 +15,7 @@ This is a decision that must be made by the business based on several considerat
 - There are **performance and scalability advantages** here also as data can be pre-aggregated and stored
 - Metrics defined here are also **reusable** across various tools, dashboards, reports
 
-### BI Tool
+### BI Tools
 
 - It is generally very easy to _drag and drop_ dimensions and values around in a BI tool creating a very **flexible and agile** way of making _ad-hoc_ analyses without having to write SQL queries
 - Many BI tools allow users to dive in and dig deeper into metrics in real-time making it more **interactive**, though it is possible to still do this with metrics calculated at the data warehouse level
@@ -38,3 +38,9 @@ This is a decision that must be made by the business based on several considerat
 - Marts can also provide a tier of access that limits visibility to lower-level data and acts as a security layer
 - The data from marts can be customized in BI tools depending on the department's needs
 - _Documentation is EXTREMELY important_: make sure that metric definition, calculation logic, source data, and any transformations are listed for the metric. That way, anyone using the data knows how it was calculated and where it came from (and developers in the future know how to ensure it's working correctly).
+
+## Final Thoughts
+
+Ultimately the decision on where metrics should be housed is usually based on how the customer wants to use the data and how fluent they are with different tools.
+
+While there are tools out there like `dbt` and [`cube.dev`](https://cube.dev) that can generate a semantic layer for consumers, if the company data culture is more `self serve` then it may be best to leave the `mart` layer as wide, denormalized data that BI tools will use to build metrics from.
