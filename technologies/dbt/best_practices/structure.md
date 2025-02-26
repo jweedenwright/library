@@ -1,6 +1,8 @@
-# dbt (Data Build Tool) Best Practices
+# dbt (Data Build Tool) Best Practices - Structure
 
-> Pulled from: https://docs.getdbt.com/best-practices
+- [Back to Table of Contents](toc.md)
+
+Pulled from: https://docs.getdbt.com/best-practices
 
 ## Some Main Ideas:
 
@@ -254,5 +256,28 @@ select * from orders_and_payments_joined
 - **One config / folder**: `_<dir_name>__models.yml` should configure all models in the directory
   - For `staging` you'll need one for sources also (per directory): `_<dir_name>__sources.yml`
   - The leading `_` ensures it's always at the top and easy to separate from models
-  - This is considered the most balanced approach
+  - This is considered the most balanced approach as it avoids a _monolythic single config for the entire project_ that is hard to manage and find information in as well as doesn't slow down development and add overly cumbersome busy work in the _single config per model_ approach.
 - **For docs, follow the same pattern**: `_<dir_name>__docs.md` will ensure your documentation is also easy to find and consistent.
+- **Cascade configs**: use `dbt_project.yml` to set default configurations at the directory level (i.e. materialization of `mart` models as tables) and then special conditions can be broken down at the model level. By doing this, we reduce on redundancy and needing to define multiple things in lower-level configs.
+
+---
+
+## Other folders in a dbt project: tests, seeds, and analyses
+
+### Seeds
+
+- Most commonly used for lookup tables helpful for modeling but not in any source system (i.e. mapping zip codes to states)
+- These should **NOT** be used for loading source data. You should be connecting to the source and loading the raw data into your warehouse whenever possible.
+
+### Analysis
+
+- Used for storing auditing queries that aren't built into your models. `dbtdocs` finds the most commonly used to store queries that leverage the audit helper package. This can be used for finding discrepancies in output when migrating logic from another system into `dbt`.
+
+### Tests
+
+- Most useful for testing multiple specific tables simultaneously (i.e. tables interacting with each other)
+- Most of the time pre-built tests are all you need for single tables ([`dbt-expectations`](https://github.com/calogica/dbt-expectations?tab=readme-ov-file) is a good example)
+
+## Macros
+
+- Useful for creating reusable transformations that are done over and over
