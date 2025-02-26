@@ -207,8 +207,7 @@ models/marts
 - **Materialized as Tables or incremental models**: by having these as a table in our Data Warehouses, it reduces costly recompute of all the chains of models we've created to get here whenever a user refreshes their dashboard.
   - A good practice is to use a **view** until it takes too long to practically query, then a **table**...and then an **incremental model**
 - **Wide and denormalized**: with cheap storage and compute expensive, all the data should be ready to go and available
-- **Avoid too many Joins**: As mentioned in the Intermediate section above, reducing complexity
-  is extremely important when it comes to readability and building a clear mental model of what is happening.
+- **Avoid too many Joins**: As mentioned in the Intermediate section above, reducing complexity is extremely important when it comes to readability and building a clear mental model of what is happening.
 - **Build / Reuse separate marts _Thoughtfully_**: again, while the strategy is to get a narrow DAG, including a mart in another mart's generation may be necessary (such as using an `orders` mart as part of building the `customer` mart to get critical order data.)
 - **Marts are based on entities, but that doesn't mean they don't contain _other_ entity data** - as in the last bullet, a `customer` entity may also contain `order` or `visit/session` data. Just keep away from building metrics in your marts (like `user_orders_per_day`)
 

@@ -23,10 +23,18 @@ This is a decision that must be made by the business based on several considerat
 
 ## Best Practices for Defining Metric Models in Data Warehouses
 
-#### Understanding Business Requirements and Data Usage
+### Understanding Business Requirements and Data Usage
 
-- Types of reports are needed
-- How often the data is accessed
-- How MUCH data is being accessed
-- What are the most important metrics/KPIs?
-- How does the business DEFINE those metrics and KPIs?
+- **Types** of reports needed
+- How **often the data** is accessed
+- How **much data** is being accessed
+- What are the desired **metrics/KPIs**?
+- How does the business **DEFINE those metrics and KPIs**?
+
+### Data Marts and Metrics
+
+- Each mart allows you to segment your data based on various aspects for business units, departments, or user groups/**cohorts**.
+- By pre-aggregating your metrics into a mart, you can optimize the performance of the reporting tools using your mart
+- Marts can also provide a tier of access that limits visibility to lower-level data and acts as a security layer
+- The data from marts can be customized in BI tools depending on the department's needs
+-
