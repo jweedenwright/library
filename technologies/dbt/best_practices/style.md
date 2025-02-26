@@ -12,7 +12,7 @@ Pulled from: https://docs.getdbt.com/best-practices/how-we-style/0-how-we-style-
 
 ---
 
-## [Model and Field Naming](https://docs.getdbt.com/best-practices/how-we-structure/2-staging)
+## [Model and Field Naming](https://docs.getdbt.com/best-practices/how-we-style/1-how-we-style-our-dbt-models)
 
 ### Models
 
@@ -67,3 +67,77 @@ renamed as (
 )
 select * from renamed
 ```
+
+---
+
+## [SQL](https://docs.getdbt.com/best-practices/how-we-style/2-how-we-style-our-sql)
+
+### Basics
+
+- Use **SQLFluff** to automatically abide by these rules (`pip install sqlfluff`)
+- Use Jinja comments `{# #}` for comments not to include in compiled code
+- Use trailing commas
+- Four spaces for an indent
+- Max 80 char length per line
+- Field names, keywords, and function names should all be **lowercase**
+- `as` keyword should be used **explicitly when aliasing**
+
+### Fields, Aggregations, and Grouping
+
+- State fields prior to aggregations and window functions
+- Run aggregations as early as possible on the smallest data set possible before joining to improve performance
+- `order by` and `group by` a number (`group by 1`) is **preferred over listing column names**
+  - In `group by 1`, `1` refers to the first column in the select statement
+
+### Joins
+
+- Use `union all` over `union` unless you explicitly want to remove duplicates
+- If using a `join`, **always prefix column names with the table name**
+- Use specific joins over `join` (i.e. `inner join`, `outer join`)
+- Avoid using aliases
+- Move **left to right** to make join reasoning easy to understand. If using a `right join`, change up the `from` and `join` tables
+
+### _Import_ CTEs (top of file _ref_)
+
+- All `{{ ref ('...') }}` statements should be in the CTEs at the top of the file
+- Named after the table referencing
+- Only select columns you're actually using and use where if possible to filter out unnecessary data
+
+```
+with orders as (
+    select
+        order_id,
+        customer_id,
+        order_total,
+        order_date
+
+    from {{ ref('orders') }}
+
+    where order_date >= '2020-01-01'
+)
+```
+
+### _Functional_ CTEs
+
+- These should try to do a single unit of work (if performance permits)
+- Use verbose names to easily understand what it is doing
+- Duplicated CTEs should be pulled into their own `intermediate` models and referenced from there (i.e. repeated selecting and trimming of a dataset)
+- Last line of a model should always be `select *`
+
+---
+
+## [Jinja](https://docs.getdbt.com/best-practices/how-we-style/4-how-we-style-our-jinja)
+
+- When using, add spaces inside your delimiters like `{{ this }}` and not `{{this}}`
+- Use newlines to visually indicate logical blocks of Jinja
+- Indent 4 spaces into a Jinja block to visually indicate code inside is wrapped in a block
+
+---
+
+## [YAML](https://docs.getdbt.com/best-practices/how-we-style/5-how-we-style-our-yaml)
+
+- Indent 2 spaces
+- List itens should be indented
+- List item best practice is to provide the argument as a list: `'select': ['other_user']`
+- Use newlines to separate dictionaries
+- Max 80 char length per line
