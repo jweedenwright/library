@@ -37,4 +37,4 @@ This is a decision that must be made by the business based on several considerat
 - By pre-aggregating your metrics into a mart, you can optimize the performance of the reporting tools using your mart
 - Marts can also provide a tier of access that limits visibility to lower-level data and acts as a security layer
 - The data from marts can be customized in BI tools depending on the department's needs
--
+- _Documentation is EXTREMELY important_: make sure that metric definition, calculation logic, source data, and any transformations are listed for the metric. That way, anyone using the data knows how it was calculated and where it came from (and developers in the future know how to ensure it's working correctly).
