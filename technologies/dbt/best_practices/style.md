@@ -26,9 +26,9 @@ Pulled from: https://docs.getdbt.com/best-practices/how-we-style/0-how-we-style-
 ### All
 
 - **Use `snake_case`**: for schema, table, and column names (and probably most things to be consistent)
-- Booleans should be prefixed with **is\_** or **has\_** (i.e. `has_insurance`)
-- Timestamps should be named **[event]\_at** AND be in **UTC** (i.e. `updated_at`)
-- Dates should be named **[event]\_date** (i.e. `created_date`)
+- Booleans should be prefixed with `is\_` or `has\_` (i.e. `has_insurance`)
+- Timestamps should be named `[event]\_at` AND be in **UTC** (i.e. `updated_at`)
+- Dates should be named `[event]\_date` (i.e. `created_date`)
 - Dates and times should be **past tense**
 - Prices should be in **decimal currency** (i.e. `19.99`). **If a non-decimal currency is used**, indicate with a suffix (`price_in_cents`)
 - Use **BUSINESS TERMINOLOGY** not the source terminology. If a source calls them a `user` but the business calls them a `consumer`, use `consumer`
