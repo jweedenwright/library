@@ -2,6 +2,8 @@
 
 - **PREREQS: Basic data science and Python**
 - **Course Objectives**: explore steps in generative ai lifecycle: scoping, select model, optimize model for deployment, and integrate into application. Specifically around LLM (so text primarly)
+- [FAQ for GenAI with LLMs Labs](https://community.deeplearning.ai/t/genai-with-llms-lab-faq/374869)
+- If you cannot find an answer in the FAQs, you can [search for or create a new post here](https://community.deeplearning.ai/c/course-q-a/generative-ai-with-large-language-models/328)
 
 ## Overview
 
