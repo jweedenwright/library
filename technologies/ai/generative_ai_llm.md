@@ -32,6 +32,37 @@
 
 ---
 
+## Resources
+
+### Generative AI Lifecycle
+
+- [Generative AI on AWS: Building Context-Aware, Multimodal Reasoning Applications - This O'Reilly book dives deep into all phases of the generative AI lifecycle including model selection, fine-tuning, adapting, evaluation, deployment, and runtime optimizations.](https://www.amazon.com/Generative-AI-AWS-Multimodal-Applications/dp/1098159225/)
+
+### Transformer Architecture
+
+- [Attention is All You Need - This paper introduced the Transformer architecture, with the core “self-attention” mechanism. This article was the foundation for LLMs.](https://arxiv.org/pdf/1706.03762)
+- [BLOOM: BigScience 176B Model - BLOOM is a open-source LLM with 176B parameters trained in an open and transparent way. In this paper, the authors present a detailed discussion of the dataset and process used to train the model.](https://arxiv.org/abs/2211.05100)
+  - [You can also see a high-level overview of the model here](https://bigscience.notion.site/BLOOM-BigScience-176B-Model-ad073ca07cdf479398d5f95d88e218c4)
+- [Vector Space Models - Series of lessons from DeepLearning.AI's Natural Language Processing specialization discussing the basics of vector space models and their use in language modeling.](https://www.coursera.org/learn/classification-vector-spaces-in-nlp/home/week/3)
+
+### Pre-training and Scaling Laws
+
+- [Scaling Laws for Neural Language Models - empirical study by researchers at OpenAI exploring the scaling laws for large language models.](https://arxiv.org/abs/2001.08361)
+
+### Model Architectures and Pre-Training Objectives
+
+- [What Language Model Architecture and Pretraining Objective Work Best for Zero-Shot Generalization? - The paper examines modeling choices in large pre-trained language models and identifies the optimal approach for zero-shot generalization.](https://arxiv.org/pdf/2204.05832.pdf)
+- [Hugging Face Tasks](https://huggingface.co/tasks) and [Model Hub](https://huggingface.co/models) - Collection of resources to tackle varying machine learning tasks using the HuggingFace library.
+- [LLaMA: Open and Efficient Foundation Language Models - Article from Meta AI proposing Efficient LLMs (their model with 13B parameters outperform GPT3 with 175B parameters on most benchmarks)](https://arxiv.org/pdf/2302.13971.pdf)
+
+### Scaling Laws and Compute-optimal Models
+
+- [Language Models are Few-Shot Learners - This paper investigates the potential of few-shot learning in Large Language Models.](https://arxiv.org/pdf/2005.14165.pdf)
+- [Training Compute-Optimal Large Language Models - Study from DeepMind to evaluate the optimal model size and number of tokens for training LLMs. Also known as “Chinchilla Paper”.](https://arxiv.org/pdf/2203.15556.pdf)
+- [BloombergGPT: A Large Language Model for Finance - LLM trained specifically for the finance domain, a good example that tried to follow chinchilla laws.](https://arxiv.org/pdf/2303.17564.pdf)
+
+---
+
 ## Generative AI & LLMs
 
 - A machine capable of making content that mimics human capability
@@ -134,7 +165,7 @@
 
 - Training larger and larger models because infeasible and very expensive
 - The **encoder** and **decoder** can be separated out into different spaces
-  - Also called **autoencoding** models
+- Also called **autoencoding** models
   - Build _bidirectional_ representations of the input sequence
   - **Pre-Training Strategy:** `MLM | Masked Language Modeling`
   - **Use Cases:** Sentiment analysis, named entity recognition, word classification
@@ -151,7 +182,7 @@
   - Also called **autoregressive** models
   - `pre-trained` with causal data
   - Mask the input sequence and can only see the tokens **UP TO** the token
-  - UNIDIRECTIONAL - must build up knowledge by a massive amount of examples as they have no context AFTER the token.
+  - _Unidirectional_ - must build up knowledge by a massive amount of examples as they have no context AFTER the token.
   - **Pre-Training Strategy:** `CLM | Causal Language Modeling`
   - **Use Cases:** Text Generation
   - **Examples:** GPT and Bloom
@@ -273,6 +304,8 @@ Be _specific_ to save time and compute costs.
 - GB/TB/PB of unstructured data that the model processes
 - Encoder generates the vector representation for each token
 - Need to process data scraped to remove bad data
+- **2D parallelism:** combining data parallelism with pipeline parallelism
+- **3D parallelism:** combining data parallelism with _BOTH_ pipeline parallelism and tensor parallelism simultaneously
 
 ---
 
