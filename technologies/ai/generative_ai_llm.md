@@ -314,6 +314,8 @@ Be _specific_ to save time and compute costs.
   - Performance (DDP) vs Memory (FSDP) tradeoff here
   - FSDP can drop the number of TeraFLOPS (1 trillion floating point operations / second) per GPU dramatically when using sharding (FSDP)
 
+---
+
 ## Scaling Choices
 
 - Smaller models
@@ -328,3 +330,18 @@ Be _specific_ to save time and compute costs.
 - **T5 XL 3 billion parameters - required about 100 petaflop/s-day**
 - Chincilla Paper - argues that models are **over-parametertized** and **under-trained**
   - i.e. don't need as many params, just more training data
+
+---
+
+## Week 1 - Lab
+
+- Dialogue summarization task using generative AI
+- Input text affects output of model
+- Compare zero, one, and few shot inferences
+- Spins up an AWS instance -> Sagemaker Studio -> Jupyter Lab
+- Copy premade notebook/files over
+- Notebook verifies size of instance so we can do the work (m5_2xlarge)
+- Install pip, tensorflow, keras, torch (pytorch), torchdata, and then hugging face's datasets, transformers, evaluate, rouge_score, and peft libraries
+- Generating a summary of a dialogue with the pre-trained Large Language Model (LLM) FLAN-T5 from Hugging Face
+  - [Hugging face `transformers` package](https://huggingface.co/docs/transformers/index)
+  - [Hugging face `dialogsum` dataset](https://huggingface.co/datasets/knkarthick/dialogsum)

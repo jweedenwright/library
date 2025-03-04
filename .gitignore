@@ -4,3 +4,4 @@ consulting.md
 .editorconfig
 .prettierrc
 codereview/*.md
+helpers/training
