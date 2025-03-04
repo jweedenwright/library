@@ -6,23 +6,6 @@
 - If you cannot find an answer in the FAQs, you can [search for or create a new post here](https://community.deeplearning.ai/c/course-q-a/generative-ai-with-large-language-models/328)
 - [Lecture notes are available on the DeepLearning.AI Website](https://community.deeplearning.ai/t/genai-with-llms-lecture-notes/361913)
 
----
-
-# Introduction to LLMs, Pre-Training, and Scaling Laws
-
-- **Week 1** - transformer, training models, compute resources, _in-context learning_, how to tune the most important generation params of output
-- **Week 2** - adapt pretrained models for needs using _instruction fine tuning_
-- **Week 3** - align output of models with _human values_ to increase helpfulness and decrease harm and toxicity
-- Work done in **AWS** at _NO COST to you_
-- General purpose technologies - good for mulitple applications
-- Lots of important work over many years to identify use cases / fine tune / discovery work
-- Very few know how to build applications using OMs
-- Lots of input from other companies
-- AI enthusiasts, engineers, and data scientists looking to to learn technical foundations of how LLMs work
-- Training/tuning/deploying LLM
-
----
-
 ## Contributors
 
 - Ehsan Kamalinejad, Ph.D. - Machine Learning Applied Scientist, AWS
@@ -30,8 +13,6 @@
 - Saleh Soltan, Ph.D. - Senior Applied Scientist, Amazon Alexa
 - Heiko Hotz - Senior Solutions Architect for AI & Machine Learning, AWS
 - Philipp Schmid - Technical Lead, Hugging Face and AWS ML Hero
-
----
 
 ## Resources
 
@@ -61,6 +42,21 @@
 - [Language Models are Few-Shot Learners - This paper investigates the potential of few-shot learning in Large Language Models.](https://arxiv.org/pdf/2005.14165.pdf)
 - [Training Compute-Optimal Large Language Models - Study from DeepMind to evaluate the optimal model size and number of tokens for training LLMs. Also known as “Chinchilla Paper”.](https://arxiv.org/pdf/2203.15556.pdf)
 - [BloombergGPT: A Large Language Model for Finance - LLM trained specifically for the finance domain, a good example that tried to follow chinchilla laws.](https://arxiv.org/pdf/2303.17564.pdf)
+
+---
+
+# Introduction to LLMs, Pre-Training, and Scaling Laws
+
+- **Week 1** - transformer, training models, compute resources, _in-context learning_, how to tune the most important generation params of output
+- **Week 2** - adapt pretrained models for needs using _instruction fine tuning_
+- **Week 3** - align output of models with _human values_ to increase helpfulness and decrease harm and toxicity
+- Work done in **AWS** at _NO COST to you_
+- General purpose technologies - good for mulitple applications
+- Lots of important work over many years to identify use cases / fine tune / discovery work
+- Very few know how to build applications using OMs
+- Lots of input from other companies
+- AI enthusiasts, engineers, and data scientists looking to to learn technical foundations of how LLMs work
+- Training/tuning/deploying LLM
 
 ---
 
