@@ -4,6 +4,7 @@
 - **Course Objectives**: explore steps in generative ai lifecycle: scoping, select model, optimize model for deployment, and integrate into application. Specifically around LLM (so text primarly)
 - [FAQ for GenAI with LLMs Labs](https://community.deeplearning.ai/t/genai-with-llms-lab-faq/374869)
 - If you cannot find an answer in the FAQs, you can [search for or create a new post here](https://community.deeplearning.ai/c/course-q-a/generative-ai-with-large-language-models/328)
+- [Lecture notes are available on the DeepLearning.AI Website](https://community.deeplearning.ai/t/genai-with-llms-lecture-notes/361913)
 
 ---
 
@@ -378,3 +379,152 @@ Be _specific_ to save time and compute costs.
 - Generating a summary of a dialogue with the pre-trained Large Language Model (LLM) FLAN-T5 from Hugging Face
   - [Hugging face `transformers` package](https://huggingface.co/docs/transformers/index)
   - [Hugging face `dialogsum` dataset](https://huggingface.co/datasets/knkarthick/dialogsum)
+
+---
+
+---
+
+## Week 2 - Tuning
+
+- Can train a model off a large dataset from the web
+- Then _fine-tune_ the model with a specific set of data for your purpose
+  - **Catastrophic forgetting:** must look out for, when the model forgets a big chunk of that language/data from before.
+- 2 Types
+  - **Instruction Fine Tuning:**
+  - **PEP (Parameter Efficient) Fine Tuning:** Specialized Application usage allowing you to freeze specific tokens/data so it isn't lost
+
+---
+
+## Instruction Fine Tuning
+
+- _fine-tuning_ with instruction prompts (i.e. **instruction fine-tuning**)
+- The purpose of _fine-tuning_ is to improve the performance and adaptability of a pre-trained language model for specific tasks.
+- Drawbacks of few-shot: examples in prompt take up space in context window for other helpful information
+- Typically, models learn/build of a **self-supervised** process consuming a large amount of data.
+- A **Supervised** learning process includes a dataset of labeled examples to update the weights of the LLM.
+  - It includes **Prompt|Completion** pairs
+  - Specific instructions for the model. For each pair, if:
+    - Summarizing: `Summarize the following text:`
+    - Translating: `Translate this sentence to...`
+- Requires enough memory to store and run everything that we learned about with `pre-training`
+
+1. **PREPARE YOUR TRAINING DATA:** developers have prompt template libraries that we can use WITH large dataset WITHOUT prompts to create fine-tuning data.
+2. **TRAINING SPLITS:** divide data into _training, validation, and test_ datasets.
+3. **TRAINING**
+   a) Compare the LLM's completion sentiment (probability distribution) with the actual training label using a standard `cross-entropy` function to calculate loss
+   b) Use calculated loss to update weights in LLM
+4. **VALIDATION**
+   a) Separate steps to give LLM validation accuracy
+5. **TEST**
+   a) Used to give test accuracy
+
+### Single Task Fine-tuning
+
+- Often, 500-1000 examples needed to improve the model greatly with fine-tuning
+- **Catastrophic forgetting:** Fine tuning can improve the model in specific areas, but the model may forget how to do other tasks that were not in the tuning. This is a common problem in ML, especially deep learning models
+  - If it doesn't impact your use case, (i.e. needing the additional task processing) then it is probably ok
+  - If you need multiple task processing, you may need to do more fine tuning on _MULTIPLE TASKS_ AT THE SAME TIME (see section below)
+  - One way to mitigate catastrophic forgetting is by using regularization techniques to limit the amount of change that can be made to the weights of the model during training.
+    - **Parameter Efficient Fine Tunning (PEFT)** preserves weights of the original LLM while training just a small set of adaptive layers
+
+### Multi-task Instruction Fine-Tuning
+
+- Include multiple instructions in a single iteration
+  - i.e. Summarize the following text: <text> Rate this review: <review> Translate into Python code: <psuedo code> Identify the places: <text>
+- Downside: Requires A LOT of data (50-100k examples)
+- **FLAN** Family of models
+  - **Fine-tuned Language Net (FLAN):** Specific set of instructions used to fine-tune models - **FLAN-T5:** has been fined-tuned on 473 datasets
+    ![Flan T5 - Instruction Datasets](flan-t5.png)
+- **SAMsum** - a dialog dataset used to create a high-quality summarization model by linguists. This is included in **FLAN-T5**
+  - Include multiple ways to ask the same question will help the model understand
+- **dialogsum** is another dataset (13,000+ chatbot supporting dialog summaries). When used with _fine-tuning_
+  - Using your OWN company's conversations can help _fine-tuning_ immensely
+
+### Model Evaluation
+
+- How can you evaluate your _fine-tuned_ model over the _pre-trained_ model
+- Accuracy = Correct Predictions / Total Predictions
+- **ROUGE (SUMMARIES) ** and **BLEU SCORE (TRANSLATIONS)**
+  - **Recal Oriented Under Study for Jesting Evaluation (ROUGE):** access the quality of automatically generated summaries by comparing them to human-generated reference summaries
+    - unigram - one word
+      - Looks at number of unigrams matching output to the reference as well as the total count of unigrams in both
+      - Will miss things like the word _not_ in a sentence
+    - bigram - two words
+      - **ROUGE-2** - 2 word pairs in output vs reference
+    - n-gram - n words
+      - **ROUGE-L** - Length of the longest common subsequence (LCS) between the output and reference
+      - Matches (2/4) + Total Count (2/5) / 2 = 0.44
+  - **Bilingual Evaluation Understudy (BLEU):** an algorithm designed to evaluate the quality of machine-translated text by comparing it to human-generated translations
+    - AVG(precision across range of n-gram sizes) - similar calcuation as **ROUGE**
+      - REF: I am very happy to say that I am drinking a warm cup a tea.
+      - MODEL: I am very happy that I am drinking a cup of tea. - BLEU 0.495
+
+### Model Benchmarks
+
+- Using pre-existing dataset and associated benchmarks already established by LLM researchers
+- Select datasets that isolate specific model skills as well as focus on potential risks like disinformation or copyright infringement
+- **GLUE, SuperGLUE, HELM, MMLU, BIG-bench** are all benchmarks
+- **GLUE (General language understanding evaluation) (2017):** can be used to measure and compare model performance
+- Have leaderboards to compare and contrast models
+- **Massive Multitask Language Understanding (MMLU) (2021):** Tested on math, computer science, law, etc
+- **BIG-Bench (2022):** 204 tasks linguistics, childhood development, math, reasoning, physics, social bias, software development, etc
+  - Multiple levels to keep costs down
+- **Holistic Evaluation of Language Models (HELM):** Various metrics are measured including accuracy, calibration, robustness, _fairness, bias, toxicity,_ and efficiency
+
+---
+
+## Parameter Efficient Fine-Tuning
+
+- **Memory Usage:** 12-20x weights: Trainable weights, optimizer states, gradients, forward activations, temp memory
+  - Too large to handle on consumer hardware
+- **PEFT:** only update a small subset of trainable layers/components while _freezing_ others
+  - Weights are frozen and other layers are only
+  - As only _a small subset is updated_ you can avoid **Catastrophic forgetting**
+- Tradeoffs of PEFT: _Memory Efficiency, Parameter Efficiency, Training Speed, Model Performance, and Inference Costs_
+
+### PEFT Methods
+
+- **SELECTIVE:** select subset of initial LLM parameters to fine-tune
+- **REPARAMETERIZATION:** reparameterize model weights using a low-rank representation (**LoRA**)
+- **ADDITIVE:** Add trainable layers or parameters to the model
+  - Adapters are one way of adding
+  - Soft prompts are another (_Prompt Tuning_)
+
+### LoRA
+
+1. Freeze most of the original LLM weights prior to the `self-attention` step of the **Encoder**
+2. Inject 2 **rank decomposition matrices** whose product is the same size as the original LLM
+3. Train the weights of the smaller matrices
+   a. Matrix multiply the low rank matrices
+   b. Add the result of the matrix multiplication to the original weights
+
+- Practical Example based on the _Attention is All You Need_ paper
+  - _Using the base Transformer model presented in the paper_, Transformer weights have dimensions d x k = 512 x 64
+  - So 512 x 64 = **32,768 trainable parameters**
+- Using **LoRA** with rank r = 8
+  - A has dimensions r x k = 8 x 64 = 512 parameters
+  - B has dimensions r x d = 8 x 512 = 4096 parameters
+  - Then you do the matrix multiplication...etc
+  - _Results in an 86% reduction in parameters to train!_
+- Can use different **LoRA** _matrices to train for many different tasks_
+  - Much smaller and easier to store than the entire model
+- Comparing **FLAN-T5** full-tuning to **LoRA** tuning, while not AS accurate, are only a few percentage points off and still improve overall accuracy quite a bit (with a lower footprint)
+- While the field is obviously still evolving, a **LoRA rank** of 16 to 512 appear to have the best accuracy when evaluated with **BLEU** and **ROUGE**
+
+### Prompt Tuning / Soft Prompts
+
+- **NOT** Prompt Engineering
+  - None, one-shot, or few-shot inference
+  - Goal is to get the model to figure out what you're trying to get it to do
+  - Limited to the length of the context window
+- _With **Prompt Tuning**, you add additional trainable tokens to your prompt and leave it up to the supervised learning process to determine their optimized values_
+  - Same length as token vectors
+  - Tokens that represent natural language are hard - exists at a unique point in multi-dimensional space
+  - Soft Prompts are virtual tokens that can take on any value in the continuous multi-dimensional embedding space
+  - Underlying model is not updated (weights are frozen)
+  - Instead, embedding vectors of the soft-prompt are updated over time
+  - Only 10k-100k of parameters will be updated whereas with _full fine-tuning_ it will be in the millions to billions of parameters updated.
+- Train a set of soft prompts for multiple tasks
+  - Prepend your input prompt with the learn tokens
+  - To switch to another task, swap out the prepended value with the new soft prompt
+- Prompt tuning is more effective with larger models
