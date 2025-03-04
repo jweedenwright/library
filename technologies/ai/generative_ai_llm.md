@@ -8,7 +8,7 @@
 
 ---
 
-## Overview
+# Introduction to LLMs, Pre-Training, and Scaling Laws
 
 - **Week 1** - transformer, training models, compute resources, _in-context learning_, how to tune the most important generation params of output
 - **Week 2** - adapt pretrained models for needs using _instruction fine tuning_
@@ -76,7 +76,7 @@
 
 ---
 
-### Prompt -> Inference -> Completion
+## Prompt -> Inference -> Completion
 
 - You **PROMPT** a model with a question
 - **INFERENCE** is the act of using a model to generate text
@@ -289,14 +289,6 @@ Be _specific_ to save time and compute costs.
 
 ---
 
-## Lab Instructions
-
-- You will have 2 hours to complete each lab
-- There is a green button on the Coursera slide that will take you to AWS (you must NOT be signed in when you click)
-- Once redirected, you'll want to search for `Sagemaker`. Follow the steps from the `Vacareum` page after launching the lab
-
----
-
 ## Pre-training Large Language Models
 
 - Model hubs - have model cards that describe how they work and how they are better at specific tasks
@@ -380,11 +372,17 @@ Be _specific_ to save time and compute costs.
   - [Hugging face `transformers` package](https://huggingface.co/docs/transformers/index)
   - [Hugging face `dialogsum` dataset](https://huggingface.co/datasets/knkarthick/dialogsum)
 
----
+### Lab Instructions
+
+- You will have 2 hours to complete each lab
+- There is a green button on the Coursera slide that will take you to AWS (you must NOT be signed in when you click)
+- Once redirected, you'll want to search for `Sagemaker`. Follow the steps from the `Vacareum` page after launching the lab
 
 ---
 
-## Week 2 - Tuning
+---
+
+# Full Fine-Tuning and Parameter Efficient Fine-Tuning (PEFT)
 
 - Can train a model off a large dataset from the web
 - Then _fine-tune_ the model with a specific set of data for your purpose
