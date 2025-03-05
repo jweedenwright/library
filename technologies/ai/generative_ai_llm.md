@@ -18,30 +18,58 @@
 
 ### Generative AI Lifecycle
 
-- [Generative AI on AWS: Building Context-Aware, Multimodal Reasoning Applications - This O'Reilly book dives deep into all phases of the generative AI lifecycle including model selection, fine-tuning, adapting, evaluation, deployment, and runtime optimizations.](https://www.amazon.com/Generative-AI-AWS-Multimodal-Applications/dp/1098159225/)
+- [Generative AI on AWS: Building Context-Aware, Multimodal Reasoning Applications](https://www.amazon.com/Generative-AI-AWS-Multimodal-Applications/dp/1098159225/): This O'Reilly book dives deep into all phases of the generative AI lifecycle including model selection, fine-tuning, adapting, evaluation, deployment, and runtime optimizations.
 
 ### Transformer Architecture
 
-- [Attention is All You Need - This paper introduced the Transformer architecture, with the core “self-attention” mechanism. This article was the foundation for LLMs.](https://arxiv.org/pdf/1706.03762)
-- [BLOOM: BigScience 176B Model - BLOOM is a open-source LLM with 176B parameters trained in an open and transparent way. In this paper, the authors present a detailed discussion of the dataset and process used to train the model.](https://arxiv.org/abs/2211.05100)
+- [Attention is All You Need](https://arxiv.org/pdf/1706.03762): This paper introduced the Transformer architecture, with the core “self-attention” mechanism. This article was the foundation for LLMs.
+- [BLOOM: BigScience 176B Model](https://arxiv.org/abs/2211.05100): BLOOM is a open-source LLM with 176B parameters trained in an open and transparent way. In this paper, the authors present a detailed discussion of the dataset and process used to train the model.
   - [You can also see a high-level overview of the model here](https://bigscience.notion.site/BLOOM-BigScience-176B-Model-ad073ca07cdf479398d5f95d88e218c4)
-- [Vector Space Models - Series of lessons from DeepLearning.AI's Natural Language Processing specialization discussing the basics of vector space models and their use in language modeling.](https://www.coursera.org/learn/classification-vector-spaces-in-nlp/home/week/3)
+- [Vector Space Models](https://www.coursera.org/learn/classification-vector-spaces-in-nlp/home/week/3): Series of lessons from DeepLearning.AI's Natural Language Processing specialization discussing the basics of vector space models and their use in language modeling
 
 ### Pre-training and Scaling Laws
 
-- [Scaling Laws for Neural Language Models - empirical study by researchers at OpenAI exploring the scaling laws for large language models.](https://arxiv.org/abs/2001.08361)
+- [Scaling Laws for Neural Language Models](https://arxiv.org/abs/2001.08361): Empirical study by researchers at OpenAI exploring the scaling laws for large language models.
 
 ### Model Architectures and Pre-Training Objectives
 
-- [What Language Model Architecture and Pretraining Objective Work Best for Zero-Shot Generalization? - The paper examines modeling choices in large pre-trained language models and identifies the optimal approach for zero-shot generalization.](https://arxiv.org/pdf/2204.05832.pdf)
-- [Hugging Face Tasks](https://huggingface.co/tasks) and [Model Hub](https://huggingface.co/models) - Collection of resources to tackle varying machine learning tasks using the HuggingFace library.
-- [LLaMA: Open and Efficient Foundation Language Models - Article from Meta AI proposing Efficient LLMs (their model with 13B parameters outperform GPT3 with 175B parameters on most benchmarks)](https://arxiv.org/pdf/2302.13971.pdf)
+- [What Language Model Architecture and Pretraining Objective Work Best for Zero-Shot Generalization?](https://arxiv.org/pdf/2204.05832.pdf): The paper examines modeling choices in large pre-trained language models and identifies the optimal approach for zero-shot generalization.
+- [Hugging Face Tasks](https://huggingface.co/tasks) and [Model Hub](https://huggingface.co/models): Collection of resources to tackle varying machine learning tasks using the HuggingFace library.
+- [LLaMA: Open and Efficient Foundation Language Models](https://arxiv.org/pdf/2302.13971.pdf): Article from Meta AI proposing Efficient LLMs (their model with 13B parameters outperform GPT3 with 175B parameters on most benchmarks)
 
 ### Scaling Laws and Compute-optimal Models
 
-- [Language Models are Few-Shot Learners - This paper investigates the potential of few-shot learning in Large Language Models.](https://arxiv.org/pdf/2005.14165.pdf)
-- [Training Compute-Optimal Large Language Models - Study from DeepMind to evaluate the optimal model size and number of tokens for training LLMs. Also known as “Chinchilla Paper”.](https://arxiv.org/pdf/2203.15556.pdf)
-- [BloombergGPT: A Large Language Model for Finance - LLM trained specifically for the finance domain, a good example that tried to follow chinchilla laws.](https://arxiv.org/pdf/2303.17564.pdf)
+- [Language Models are Few-Shot Learners](https://arxiv.org/pdf/2005.14165.pdf): This paper investigates the potential of few-shot learning in Large Language Models.
+- [Training Compute-Optimal Large Language Models](https://arxiv.org/pdf/2203.15556.pdf): Study from DeepMind to evaluate the optimal model size and number of tokens for training LLMs. Also known as “Chinchilla Paper”
+- [BloombergGPT: A Large Language Model for Finance](https://arxiv.org/pdf/2303.17564.pdf): LLM trained specifically for the finance domain, a good example that tried to follow chinchilla laws
+
+### Multi-task, instruction fine-tuning
+
+- [Scaling Instruction-Finetuned Language Models](https://arxiv.org/pdf/2210.11416.pdf): Scaling fine-tuning with a focus on task, model size and chain-of-thought data
+- [Introducing FLAN: More generalizable Language Models with Instruction Fine-Tuning](https://ai.googleblog.com/2021/10/introducing-flan-more-generalizable.html): This blog (and article) explores instruction fine-tuning, which aims to make language models better at performing NLP tasks with zero-shot inference.
+
+### Model Evaluation Metrics
+
+- [HELM - Holistic Evaluation of Language Models](https://crfm.stanford.edu/helm/latest/): HELM is a living benchmark to evaluate Language Models more transparently.
+- [General Language Understanding Evaluation (GLUE) benchmark](https://openreview.net/pdf?id=rJ4km2R5t7): This paper introduces GLUE, a benchmark for evaluating models on diverse natural language understanding (NLU) tasks and emphasizing the importance of improved general NLU systems.
+- [SuperGLUE](https://super.gluebenchmark.com/): This paper introduces SuperGLUE, a benchmark designed to evaluate the performance of various NLP models on a range of challenging language understanding tasks.
+- [ROUGE: A Package for Automatic Evaluation of Summaries](https://aclanthology.org/W04-1013.pdf): This paper introduces and evaluates four different measures (ROUGE-N, ROUGE-L, ROUGE-W, and ROUGE-S) in the ROUGE summarization evaluation package, which assess the quality of summaries by comparing them to ideal human-generated summaries.
+- [Measuring Massive Multitask Language Understanding (MMLU)](https://arxiv.org/pdf/2009.03300.pdf): This paper presents a new test to measure multitask accuracy in text models, highlighting the need for substantial improvements in achieving expert-level accuracy and addressing lopsided performance and low accuracy on socially important subjects.
+- [BigBench-Hard - Beyond the Imitation Game: Quantifying and Extrapolating the Capabilities of Language Models](https://arxiv.org/pdf/2206.04615.pdf): The paper introduces BIG-bench, a benchmark for evaluating language models on challenging tasks, providing insights on scale, calibration, and social bias.
+
+### Parameter- efficient fine tuning (PEFT)
+
+- [Scaling Down to Scale Up: A Guide to Parameter-Efficient Fine-Tuning](https://arxiv.org/pdf/2303.15647.pdf): This paper provides a systematic overview of Parameter-Efficient Fine-tuning (PEFT) Methods in all three categories discussed in the lecture videos.
+- [On the Effectiveness of Parameter-Efficient Fine-Tuning](https://arxiv.org/pdf/2211.15583.pdf): The paper analyzes sparse fine-tuning methods for pre-trained models in NLP.
+
+### LoRA
+
+- [LoRA Low-Rank Adaptation of Large Language Models](https://arxiv.org/pdf/2106.09685.pdf): This paper proposes a parameter-efficient fine-tuning method that makes use of low-rank decomposition matrices to reduce the number of trainable parameters needed for fine-tuning language models.
+- [QLoRA: Efficient Finetuning of Quantized LLMs](https://arxiv.org/pdf/2305.14314.pdf): This paper introduces an efficient method for fine-tuning large language models on a single GPU, based on quantization, achieving impressive results on benchmark tests.
+
+### Prompt tuning with soft prompts
+
+- [The Power of Scale for Parameter-Efficient Prompt Tuning](https://arxiv.org/pdf/2104.08691.pdf): The paper explores "prompt tuning," a method for conditioning language models with learned soft prompts, achieving competitive performance compared to full fine-tuning and enabling model reuse for many tasks.
 
 ---
 
@@ -386,6 +414,8 @@ Be _specific_ to save time and compute costs.
 - 2 Types
   - **Instruction Fine Tuning:**
   - **PEP (Parameter Efficient) Fine Tuning:** Specialized Application usage allowing you to freeze specific tokens/data so it isn't lost
+- _Instruction fine-tuning_ involves using many prompt-completion examples as the labeled training dataset to continue training the model by updating its weights. This is different from _in-context learning_ where you provide prompt-completion examples during inference.
+- Smaller LLMs can struggle with one-shot and few-shot inference
 
 ---
 
@@ -487,7 +517,7 @@ Be _specific_ to save time and compute costs.
 ### LoRA
 
 1. Freeze most of the original LLM weights prior to the `self-attention` step of the **Encoder**
-2. Inject 2 **rank decomposition matrices** whose product is the same size as the original LLM
+2. Decomposes weights into two smaller rank matrices and trains those instead of the full model weights by inject 2 **rank decomposition matrices** whose _matrix product_ is the _same size_ as the original LLM
 3. Train the weights of the smaller matrices
    a. Matrix multiply the low rank matrices
    b. Add the result of the matrix multiplication to the original weights
@@ -522,3 +552,34 @@ Be _specific_ to save time and compute costs.
   - Prepend your input prompt with the learn tokens
   - To switch to another task, swap out the prepended value with the new soft prompt
 - Prompt tuning is more effective with larger models
+
+## Week 2 Lab
+
+- Goal is to use _fine-tuning_ so we can get our model to a point where a _zero-shot_ prompt is enough for the model to produce good results.
+
+1. Try out _FULL fine-tuning_: `full fine-tuning` model has 247,577,856 trainable params (100% trainable)
+
+```
+  Absolute percentage improvement of INSTRUCT MODEL (i.e. FULL-FINE TUNING) over ORIGINAL MODEL
+    rouge1: 18.82%
+    rouge2: 10.43%
+    rougeL: 13.70%
+    rougeLsum: 13.69%
+```
+
+2.  Try out **PEFT**: `PEFT/LoRA` model has 3,538,944 trainable params (1.41% trainable)
+    """
+    Absolute percentage improvement of PEFT MODEL over ORIGINAL MODEL
+    rouge1: 17.47%
+    rouge2: 8.73%
+    rougeL: 12.36%
+    rougeLsum: 12.34%
+
+    Absolute percentage improvement of PEFT MODEL over INSTRUCT MODEL
+    rouge1: -1.35%
+    rouge2: -1.70%
+    rougeL: -1.34%
+    rougeLsum: -1.35%
+
+    - Slight decrease in accuracy, but the training requires much less computing and memory resources (often just a single GPU).
+      """
