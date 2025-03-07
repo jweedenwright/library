@@ -201,7 +201,7 @@
 
 **6. For models with a _decoder_:**
 
-- Data that leaves the _encoder_ is a _deep representation of the structure and meaning of the input sentence_ and is inserted into the _middle_ of the _decoder_ to _influence_ the decoder's self-attention mechanisms.
+- Data that leaves the **encoder** is a _deep representation of the structure and meaning of the input sentence_ and is inserted into the _middle_ of the _decoder_ to _influence_ the decoder's self-attention mechanisms.
 
 ### Example - Generating Text with Transformers
 
@@ -209,8 +209,8 @@
 
 Translate French to English
 
-1. **PROMPT** data that leaves the encoder goes to the _middle_ of the decoder to _influence_ it's self-attention.
-2. A _start of sequence token_ is added to the _input_ to the decoder, triggering the decoder to predict the next token, based on it's contextual understanding provided by the encoder.
+1. **PROMPT** data that leaves the **encoder** goes to the _middle_ of the decoder to _influence_ it's self-attention.
+2. A _start of sequence token_ is added to the _input_ to the decoder, triggering the decoder to predict the next token, based on it's contextual understanding provided by the **encoder**.
 3. After the `softmax` output layer, we have our **first token**
 4. This then loops back to the **decoder** passing in the last-generated output token, _triggering the generation of the next token_ until the model predicts an _end-of-sequence_ token.
 5. Tokens are then _detokenized_ into words, and you have the output
@@ -368,7 +368,7 @@ Translate French to English
 - **Pre-Training** gives the model a deep statistical understanding of language
   - If your language is very specific or not used in the real world (such as legal or medical) you may need to do _pre-training_ from scratch
 - Pre-training generally requires the model to process Gigabyte/Terabyte/Petabytes of unstructured data
-- Encoder generates the vector representation for each token
+- **Encoder** generates the vector representation for each token
 - Need to process data scraped to remove bad data
 - **2D parallelism:** combining data parallelism with pipeline parallelism
 - **3D parallelism:** combining data parallelism with _BOTH_ pipeline parallelism and tensor parallelism simultaneously
@@ -552,92 +552,56 @@ How can you evaluate your _fine-tuned_ model over the _pre-trained_ model?
 
 ---
 
-## Parameter Efficient Fine-Tuning {#peft}
+## Parameter Efficient Fine-Tuning (PEFT) {#peft}
 
-- **Memory Usage:** 12-20x weights: Trainable weights, optimizer states, gradients, forward activations, temp memory
-  - Too large to handle on consumer hardware
+- **Memory Usage:** Typical models are much too large to handle on consumer hardware
 - **PEFT:** only update a small subset of trainable layers/components while _freezing_ others
-  - Weights are frozen and other layers are only
-  - As only _a small subset is updated_ you can avoid **Catastrophic forgetting**
-- Tradeoffs of PEFT: _Memory Efficiency, Parameter Efficiency, Training Speed, Model Performance, and Inference Costs_
+  - As only _a small subset is updated_ you can avoid **catastrophic forgetting**
 
 ### PEFT Methods
 
 - **SELECTIVE:** select subset of initial LLM parameters to fine-tune
 - **REPARAMETERIZATION:** reparameterize model weights using a low-rank representation (**LoRA**)
-- **ADDITIVE:** Add trainable layers or parameters to the model
+- **ADDITIVE:** Add trainable layers or parameters to the existing model
   - Adapters are one way of adding
   - Soft prompts are another (_Prompt Tuning_)
 
-### LoRA
+#### LoRA (Reparameterization PEFT)
 
-1. Freeze most of the original LLM weights prior to the `self-attention` step of the **Encoder**
-2. Decomposes weights into two smaller rank matrices and trains those instead of the full model weights by inject 2 **rank decomposition matrices** whose _matrix product_ is the _same size_ as the original LLM
-3. Train the weights of the smaller matrices
-   a. Matrix multiply the low rank matrices
-   b. Add the result of the matrix multiplication to the original weights
+1. Freeze most of the original LLM weights prior to the **self-attention** step of the **encoder**
+2. Decomposes all weights into **two smaller rank decomposition matrices and _trains those_ instead of the full model**. The _matrix product_ of these two matrices is the _same size_ as the original LLM
+3. Trains the weights of the smaller matrices
+4. Matrix multiplies the 2 low rank matrices
+5. Adds the result of the matrix multiplication to the original weights to adjust for the training
 
-- Practical Example based on the _Attention is All You Need_ paper
-  - _Using the base Transformer model presented in the paper_, Transformer weights have dimensions d x k = 512 x 64
-  - So 512 x 64 = **32,768 trainable parameters**
-- Using **LoRA** with rank r = 8
-  - A has dimensions r x k = 8 x 64 = 512 parameters
-  - B has dimensions r x d = 8 x 512 = 4096 parameters
-  - Then you do the matrix multiplication...etc
-  - _Results in an 86% reduction in parameters to train!_
+_Using the base Transformer model presented in the **Attention is All You Need** paper_:
+
+- Transformer weights have dimensions d x k = 512 x 64
+- So 512 x 64 = **32,768 trainable parameters**
+- Using **LoRA** with rank **r = 8**
+  - Matrix A has dimensions r x k = 8 x 64 = 512 parameters
+  - Matrix B has dimensions r x d = 8 x 512 = 4096 parameters
+    - _Results in an 86% reduction in parameters to train!: **32768 vs 4608**_
+  - Then you do the matrix multiplication to create the weights
 - Can use different **LoRA** _matrices to train for many different tasks_
   - Much smaller and easier to store than the entire model
-- Comparing **FLAN-T5** full-tuning to **LoRA** tuning, while not AS accurate, are only a few percentage points off and still improve overall accuracy quite a bit (with a lower footprint)
-- While the field is obviously still evolving, a **LoRA rank** of 16 to 512 appear to have the best accuracy when evaluated with **BLEU** and **ROUGE**
+- Comparing **FLAN-T5** **_full-tuning_** to **_LoRA tuning_**, while not AS accurate, are only a few percentage points off and still improve overall accuracy quite a bit (with the bonus of a lower footprint)
+- While the field is obviously still evolving, choosing a **LoRA rank** between 16 to 512 appears to have the best accuracy when evaluated with **BLEU** and **ROUGE**
 
-### Prompt Tuning / Soft Prompts
+#### Prompt Tuning / Soft Prompts (Additive PEFT)
 
-- **NOT** Prompt Engineering
-  - None, one-shot, or few-shot inference
-  - Goal is to get the model to figure out what you're trying to get it to do
-  - Limited to the length of the context window
+- (Definitely harder to understand this one...)
+- Prompt tuning is more effective with larger models
 - _With **Prompt Tuning**, you add additional trainable tokens to your prompt and leave it up to the supervised learning process to determine their optimized values_
-  - Same length as token vectors
-  - Tokens that represent natural language are hard - exists at a unique point in multi-dimensional space
-  - Soft Prompts are virtual tokens that can take on any value in the continuous multi-dimensional embedding space
+  - This is **NOT** Prompt Engineering
+- The goal here is to get the model to figure out what you're trying to get it to do
+  - Input is limited to the length of the context window
+- How it works...
   - Underlying model is not updated (weights are frozen)
-  - Instead, embedding vectors of the soft-prompt are updated over time
-  - Only 10k-100k of parameters will be updated whereas with _full fine-tuning_ it will be in the millions to billions of parameters updated.
-- Train a set of soft prompts for multiple tasks
   - Prepend your input prompt with the learn tokens
   - To switch to another task, swap out the prepended value with the new soft prompt
-- Prompt tuning is more effective with larger models
-
-## Week 2 Lab
-
-- Goal is to use _fine-tuning_ so we can get our model to a point where a _zero-shot_ prompt is enough for the model to produce good results.
-
-1. Try out _FULL fine-tuning_: `full fine-tuning` model has 247,577,856 trainable params (100% trainable)
-
-```
-  Absolute percentage improvement of INSTRUCT MODEL (i.e. FULL-FINE TUNING) over ORIGINAL MODEL
-    rouge1: 18.82%
-    rouge2: 10.43%
-    rougeL: 13.70%
-    rougeLsum: 13.69%
-```
-
-2.  Try out **PEFT**: `PEFT/LoRA` model has 3,538,944 trainable params (1.41% trainable)
-    """
-    Absolute percentage improvement of PEFT MODEL over ORIGINAL MODEL
-    rouge1: 17.47%
-    rouge2: 8.73%
-    rougeL: 12.36%
-    rougeLsum: 12.34%
-
-    Absolute percentage improvement of PEFT MODEL over INSTRUCT MODEL
-    rouge1: -1.35%
-    rouge2: -1.70%
-    rougeL: -1.34%
-    rougeLsum: -1.35%
-
-    - Slight decrease in accuracy, but the training requires much less computing and memory resources (often just a single GPU).
-      """
+  - Over time, the embedding vectors of the soft-prompt are updated
+  - Only 10k-100k of parameters will be updated whereas with _full fine-tuning_ it will be in the millions to billions of parameters updated.
 
 ---
 
@@ -645,28 +609,26 @@ How can you evaluate your _fine-tuned_ model over the _pre-trained_ model?
 
 ## Aligning Models with Human Values {#rlhf}
 
-- **Reinforcement Learning from Human Feedback (RLHF):** can help build a human-aligned LLM
-- Avoid toxic language, combative/aggressive responses, and providing dangerous information
-  - Lots of this language is on the internet, which many LLMs use
+- **Reinforcement Learning from Human Feedback (RLHF):** can help build a _human-aligned_ LLM and avoid toxic language, combative/aggressive responses, and providing dangerous information
 - **HHH - Helpful Honest Harmless**
-- **Reinforcement** - agent learns to make decisions around a specific goal, by working in an environment for a cumulative reward
-  - Action --> Analyze State --> Reward / Penalty
-  - Example:
-    - Model is an agent playing tic tac toe
-      - Actions are based on RL Policy (of the model)
-    - Environment is the board / LLM context
-    - Object is win / align text with human
-    - State s is the state of the board / current context
-    - Action space (action a all possible positions based on current board state) / Token Vocabulary
-    - Reward r
-  - Reward model is central in how the LLM updates weights based on each iteration
-- A _human labeler_ scores a dataset of completions by the original model based on alignment criteria like helpfulness, harmlessness, and honesty (**HHH**). That dataset is then used to _train the reward model_ that scores the model completions during the **RLHF** process.
+- **Reinforcement** - model learns to make decisions around a specific goal, by working in an environment for a cumulative reward
+  - Action Taken > Analyze State > Reward / Penalty Calculated > Fed Into Model
+
+_Example: Model is an agent playing tic tac toe_
+
+- Actions are based on **Reinforcement Learning (RL) Policy** of the model (i.e. toxicity, hate, etc)
+- Environment is the tic tac toe board (LLM context)
+- Objective is to win (Align text with human)
+- State is the current state of the board (Current context window)
+- Action is all possible positions based on current board state (Token vocabulary)
+
+A _human labeler_ scores a dataset of completions by the original model based on alignment criteria like helpfulness, harmlessness, and honesty (**HHH**). That dataset is then used to _train the reward model_ that scores the model completions during the **RLHF** process.
 
 ### Obtaining Feedback from Humans
 
 - Define your model alignment criterion (Helpfulness, Toxicity, etc)
 - Model can generate several responses
-- Human can then enter numbers ranking the response quality
+- _Human labeler_ can then enter numbers ranking the response quality
 - _Clarity of questions and instructions_ will result in _higher-quality human labeler responses_
 - Will need to convert rankings into _pairwise training data for the reward model_
   - So, with 3 ranks, you'll need to create 3 sets of responses comparing each
@@ -676,15 +638,16 @@ How can you evaluate your _fine-tuned_ model over the _pre-trained_ model?
     [b,c,[1,0]]
     ```
   - Then you'll need to reorder items to always have the best response first as the reward model expects the best response first:
-  ```
-  [b,a,[1,0]]
-  [a,c,[1,0]]
-  [b,c,[1,0]]
-  ```
+    ```
+    [b,a,[1,0]]
+    [a,c,[1,0]]
+    [b,c,[1,0]]
+    ```
+  - This way, the results can easily be interpreted as to which is preferred
 
-### Reward Model and Fine-tuning with reinforcement learning
+### Reward Model and Fine-tuning with Reinforcement Learning
 
-- Can take the place of the human labeler
+- Can take the place of expensive human labeler
 - Start with a model that already has a good performance on your task
 - Steps in the reward model process:
   1. Dataset feeds into LLM
@@ -842,7 +805,7 @@ How can you evaluate your _fine-tuned_ model over the _pre-trained_ model?
     - External data sources, documents, databases, web APIs
   - **Retriever (R)**
     - **Query Encoder** - encodes the input query into the same format as the external sources and then...
-    - **External Information Sources** - is queried by query encoder output
+    - **External Information Sources** - is queried by query **encoder** output
     - If relevant entry / info found, combines prompt with NEW text
     - New prompt with data is fed to LLM
   - Important considerations of **RAG**:
