@@ -203,8 +203,6 @@
 
 - Data that leaves the _encoder_ is a _deep representation of the structure and meaning of the input sentence_ and is inserted into the _middle_ of the _decoder_ to _influence_ the decoder's self-attention mechanisms.
 
----
-
 ### Example - Generating Text with Transformers
 
 - **Sequence-to-sequence** tasks, like this example, are good for translations and are also the original objective of the transformer architecture designers
@@ -216,8 +214,6 @@ Translate French to English
 3. After the `softmax` output layer, we have our **first token**
 4. This then loops back to the **decoder** passing in the last-generated output token, _triggering the generation of the next token_ until the model predicts an _end-of-sequence_ token.
 5. Tokens are then _detokenized_ into words, and you have the output
-
----
 
 ### Encoder / Decoder Model Types
 
@@ -422,8 +418,6 @@ Translate French to English
     - Better for smaller, less-performant architectures and/or reducing costs (longer run times)
     - FSDP can drop the number of TeraFLOPS (1 trillion floating point operations / second) per GPU dramatically when using sharding (FSDP)
 
----
-
 ### Scaling Choices
 
 - **Smaller models:** these reduce overall footprint, but often are only good at specific task sets
@@ -447,95 +441,118 @@ Example: _1 petaflop/s-day = 1 quadrillion floating operations per second_
 # Full Fine-Tuning and Parameter Efficient Fine-Tuning (PEFT)
 
 - Can train a model off a large dataset from the web
-- Then _fine-tune_ the model with a specific set of data for your purpose
-  - **Catastrophic forgetting:** must look out for, when the model forgets a big chunk of that language/data from before.
-- 2 Types
-  - **Instruction Fine Tuning:**
-  - **PEP (Parameter Efficient) Fine Tuning:** Specialized Application usage allowing you to freeze specific tokens/data so it isn't lost
-- _Instruction fine-tuning_ involves using many prompt-completion examples as the labeled training dataset to continue training the model by updating its weights. This is different from _in-context learning_ where you provide prompt-completion examples during inference.
-- Smaller LLMs can struggle with one-shot and few-shot inference
+- Then _fine-tune_ the model with a specific set of data to improve the performance and adaptability for specific tasks.
+  - The trick with this is to avoid **catastrophic forgetting**, when the model forgets a big chunk of the language/data from it's original training
+- _2 approaches to this_:
+  - **Instruction Fine Tuning:** Using many prompt-completion examples as the labeled training dataset to continue training the model by updating its weights. This is different from _in-context learning_ where you provide prompt-completion examples during inference.
+  - **PEP (Parameter Efficient) Fine Tuning:** Specialized application usage allowing you to freeze specific tokens/data so it isn't lost
+- Smaller LLMs can struggle with one-shot and few-shot inference, so _fine-tuning_ these models can be very important
 
 ---
 
 ## Instruction Fine Tuning
 
-- _fine-tuning_ with instruction prompts (i.e. **instruction fine-tuning**)
-- The purpose of _fine-tuning_ is to improve the performance and adaptability of a pre-trained language model for specific tasks.
-- Drawbacks of few-shot: examples in prompt take up space in context window for other helpful information
+- _fine-tuning_ with instruction prompts
+- Drawbacks of using few-shot inferences this way is the prompts take up valuable space in the context window that could include other helpful information
 - Typically, models learn/build of a **self-supervised** process consuming a large amount of data.
 - A **Supervised** learning process includes a dataset of labeled examples to update the weights of the LLM.
   - It includes **Prompt|Completion** pairs
   - Specific instructions for the model. For each pair, if:
     - Summarizing: `Summarize the following text:`
     - Translating: `Translate this sentence to...`
-- Requires enough memory to store and run everything that we learned about with `pre-training`
+- This approach requires enough memory to store and run [_everything that we learned about earlier in pre-training_](#computational-challenges-memory)
 
-1. **PREPARE YOUR TRAINING DATA:** developers have prompt template libraries that we can use WITH large dataset WITHOUT prompts to create fine-tuning data.
-2. **TRAINING SPLITS:** divide data into _training, validation, and test_ datasets.
-3. **TRAINING**
-   a) Compare the LLM's completion sentiment (probability distribution) with the actual training label using a standard `cross-entropy` function to calculate loss
-   b) Use calculated loss to update weights in LLM
-4. **VALIDATION**
-   a) Separate steps to give LLM validation accuracy
-5. **TEST**
-   a) Used to give test accuracy
+**1. Prepare your training data:** developers have prompt template libraries that we can use with large datasets to create fine-tuning data.
+**2. Training Splits:** divide data into _training, validation, and test_ datasets. Some of these datasets come setup like this already.
+**3. Training**
 
-### Single Task Fine-tuning
+1.  Compare the LLM's completion sentiment (probability distribution) with the actual training label using a standard `cross-entropy` function ([See the difference here between this and KL Divergence discussed later](https://medium.com/@mrthinger/kl-divergence-vs-cross-entropy-exploring-the-differences-and-use-cases-3f3dee58c452)) to calculate loss
+2.  Use calculated loss to update weights in LLM
 
-- Often, 500-1000 examples needed to improve the model greatly with fine-tuning
-- **Catastrophic forgetting:** Fine tuning can improve the model in specific areas, but the model may forget how to do other tasks that were not in the tuning. This is a common problem in ML, especially deep learning models
-  - If it doesn't impact your use case, (i.e. needing the additional task processing) then it is probably ok
-  - If you need multiple task processing, you may need to do more fine tuning on _MULTIPLE TASKS_ AT THE SAME TIME (see section below)
+**3. Validation:** Separate steps to give LLM validation accuracy, ran on model after training
+
+**4. Testing:** Used to give test accuracy after training
+
+### Single-Task Instruction Fine-tuning
+
+- Often, _500-1000 examples are needed_ to improve the model greatly with fine-tuning
+- When running **Single Task Fine-tuning**, the model may forget how to do other tasks that were not in the tuning. This is a common problem in machine learning, especially deep learning models. This is called **catastrophic forgetting**.
+  - If the data forgotten doesn't impact your use case, (i.e. needing the additional task processing) then **catastrophic forgetting** is probably ok
+  - If your use case is more complicated and requires multiple task processing, you may need to do more fine tuning on [multiple tasks at the same time](#multi-task-fine-tuning)
   - One way to mitigate catastrophic forgetting is by using regularization techniques to limit the amount of change that can be made to the weights of the model during training.
-    - **Parameter Efficient Fine Tunning (PEFT)** preserves weights of the original LLM while training just a small set of adaptive layers
+    - [Parameter Efficient Fine Tunning (PEFT)](#peft) preserves weights of the original LLM while training just a small set of adaptive layers
 
-### Multi-task Instruction Fine-Tuning
+### Multi-Task Instruction Fine-Tuning {#multi-task-fine-tuning}
 
-- Include multiple instructions in a single iteration
-  - i.e. Summarize the following text: <text> Rate this review: <review> Translate into Python code: <pseudo code> Identify the places: <text>
-- Downside: Requires A LOT of data (50-100k examples)
-- **FLAN** Family of models
-  - **Fine-tuned Language Net (FLAN):** Specific set of instructions used to fine-tune models - **FLAN-T5:** has been fined-tuned on 473 datasets
+- Include multiple instructions in a single **PROMPT**
+
+```
+Summarize the following text:
+<text>
+
+Rate this review:
+<review>
+
+Translate into Python code:
+<pseudo code>
+
+Identify the places:
+<text>
+```
+
+- **Downsides:**
+  - Requires _A LOT_ of data (50-100k examples)
+  - May need to include multiple ways of asking the same question to help the model understand
+
+#### Multi-Task Datasets and Models
+
+- **Fine-tuned Language Net (FLAN):** Uses a specific set of instructions to fine-tune models
+  - **FLAN-T5:** has been fined-tuned on 473 datasets and is available for use
     ![Flan T5 - Instruction Datasets](flan-t5.png)
-- **SAMsum** - a dialog dataset used to create a high-quality summarization model by linguists. This is included in **FLAN-T5**
-  - Include multiple ways to ask the same question will help the model understand
-- **dialogsum** is another dataset (13,000+ chatbot supporting dialog summaries). When used with _fine-tuning_
-  - Using your OWN company's conversations can help _fine-tuning_ immensely
-
-### Model Evaluation
-
-- How can you evaluate your _fine-tuned_ model over the _pre-trained_ model
-- Accuracy = Correct Predictions / Total Predictions
-- **ROUGE (SUMMARIES)** and **BLEU SCORE (TRANSLATIONS)**
-  - **Recall-Oriented Understudy for Jesting Evaluation (ROUGE):** access the quality of automatically generated summaries by comparing them to human-generated reference summaries
-    - unigram - one word
-      - Looks at number of unigrams matching output to the reference as well as the total count of unigrams in both
-      - Will miss things like the word _not_ in a sentence
-    - bigram - two words
-      - **ROUGE-2** - 2 word pairs in output vs reference
-    - n-gram - n words
-      - **ROUGE-L** - Length of the longest common subsequence (LCS) between the output and reference
-      - Matches (2/4) + Total Count (2/5) / 2 = 0.44
-  - **Bilingual Evaluation Understudy (BLEU):** an algorithm designed to evaluate the quality of machine-translated text by comparing it to human-generated translations
-    - AVG(precision across range of n-gram sizes) - similar calculation as **ROUGE**
-      - REF: I am very happy to say that I am drinking a warm cup a tea.
-      - MODEL: I am very happy that I am drinking a cup of tea. - BLEU 0.495
-
-### Model Benchmarks
-
-- Using pre-existing dataset and associated benchmarks already established by LLM researchers
-- Select datasets that isolate specific model skills as well as focus on potential risks like disinformation or copyright infringement
-- **GLUE, SuperGLUE, HELM, MMLU, BIG-bench** are all benchmarks
-- **GLUE (General language understanding evaluation) (2017):** can be used to measure and compare model performance
-- Have leaderboards to compare and contrast models
-- **Massive Multitask Language Understanding (MMLU) (2021):** Tested on math, computer science, law, etc
-- **BIG-Bench (2022):** 204 tasks linguistics, childhood development, math, reasoning, physics, social bias, software development, etc
-  - Multiple levels to keep costs down
-- **Holistic Evaluation of Language Models (HELM):** Various metrics are measured including accuracy, calibration, robustness, _fairness, bias, toxicity,_ and efficiency
+- **SAMsum** is a dialog dataset created by linguists used to create a high-quality summarization models.
+  - This is included in **FLAN-T5**
+- **dialogsum** is another dataset (13,000+ chatbot supporting dialog summaries)
+  - Using your **OWN** company's chatbot conversations can help _fine-tuning_ immensely
 
 ---
 
-## Parameter Efficient Fine-Tuning
+## Model Evaluation
+
+How can you evaluate your _fine-tuned_ model over the _pre-trained_ model?
+
+### ROUGE | Summarization Models
+
+- **Recall-Oriented Understudy for Gisting Evaluation (ROUGE):** access the quality of automatically generated summaries by comparing them to human-generated reference summaries
+- **ROUGE** has 3 levels of accuracy analysis:
+  - **_unigram:_** finding one word matching between generated **COMPLETION** and reference
+    - Looks at two items: number of unigrams **matching** and the **difference in total count of unigrams**
+    - **Downside of this approach is** it will miss things like the word _not_ in a sentence
+    - Example: (Matches (2/4 = .5) + Total Count (2/5) = .4) / 2 = 0.44
+  - **_bigram:_** finding two word pairs between the **COMPLETION** and reference (**ROUGE-2**)
+  - **_n-gram:_** finding the length of the longest common subsequence (LCS) between the output and reference (**ROUGE-L**)
+
+### BLEU SCORE (TRANSLATIONS)
+
+- **Bilingual Evaluation Understudy (BLEU)** is an algorithm designed to evaluate the quality of machine-translated text by comparing it to human-generated translations
+  - **_AVG(precision across range of n-gram sizes)_:** similar calculation as **ROUGE**
+    - Example:
+      - _REFERENCE_: I am very happy to say that I am drinking a warm cup a tea.
+      - _MODEL_: I am very happy that I am drinking a cup of tea.
+      - _BLEU_ score of 0.495
+
+### Model Benchmarks
+
+- **Established Industry Benchmarking Tools:** GLUE, SuperGLUE, HELM, MMLU, BIG-bench
+  - **GLUE (General language understanding evaluation) (2017):** can be used to measure and compare model performance
+    - Have leaderboards to compare and contrast models
+  - **Massive Multitask Language Understanding (MMLU) (2021):** Tested on math, computer science, law, etc
+  - **BIG-Bench (2022):** 204 tasks linguistics, childhood development, math, reasoning, physics, social bias, software development, etc
+    - Multiple levels to keep costs down
+  - **Holistic Evaluation of Language Models (HELM):** Various metrics are measured including accuracy, calibration, robustness, _fairness, bias, toxicity,_ and efficiency
+
+---
+
+## Parameter Efficient Fine-Tuning {#peft}
 
 - **Memory Usage:** 12-20x weights: Trainable weights, optimizer states, gradients, forward activations, temp memory
   - Too large to handle on consumer hardware
