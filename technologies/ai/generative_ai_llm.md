@@ -7,9 +7,7 @@
   - [Generative AI & LLMs](#llm)
   - [History Lesson - Before Transformers](#history)
   - [Transformers](#transformers)
-
     - [Encoder / Decoder Model Types](#model-types)
-
   - [Prompt Engineering](#prompt-engineering)
   - [Generative Configuration](#genconfig)
   - [Generative AI Project Lifecycle](#lifecycle)
