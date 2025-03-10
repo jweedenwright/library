@@ -174,7 +174,7 @@
 
 **1. TokenizationTokenize words in the _PROMPT_ and assign token ids to words/phrases**
 
-- The same **tokenizer** must be used across the process of assigning tokens _AND_ generating a **COMPLETION** (output)
+- The same **tokenizer** must be used across the process of assigning tokens _AND_ generating a **COMPLETION** (output). Each **tokenizer** is optimized for the model it is packaged with and you will see bad results if you mix and match.
 
 **2. The input is now represented as numbers and passed to the _embedding_ layer**
 
@@ -362,7 +362,7 @@ Translate French to English
 
 ---
 
-## Pre-training Large Language Models
+## Pre-Training Large Language Models {#pretrain}
 
 - **Model Hubs** - have model cards that describe how they work and how they are better at specific tasks. AWS has one in [SageMaker AI](https://aws.amazon.com/sagemaker/)
 - **Pre-Training** gives the model a deep statistical understanding of language
@@ -372,14 +372,9 @@ Translate French to English
 - Need to process data scraped to remove bad data
 - **2D parallelism:** combining data parallelism with pipeline parallelism
 - **3D parallelism:** combining data parallelism with _BOTH_ pipeline parallelism and tensor parallelism simultaneously
-
----
-
-## Computational Challenges of Training LLMs
-
 - Training larger and larger models is becoming infeasible due to how costly this can be (from both a dollar amount to a storage/GPU perspective)
 
-### Memory {#computational-challenges-memory}
+### Computational Challenges - Memory {#computational-challenges-memory}
 
 - **Memory** is definitely the number one challenge.
 - Below is a table showing space required for 1 32-bit float param and then for 4 billion params in a model:
@@ -418,7 +413,7 @@ Translate French to English
     - Better for smaller, less-performant architectures and/or reducing costs (longer run times)
     - FSDP can drop the number of TeraFLOPS (1 trillion floating point operations / second) per GPU dramatically when using sharding (FSDP)
 
-### Scaling Choices
+### Computational Challenges - Scaling Choices
 
 - **Smaller models:** these reduce overall footprint, but often are only good at specific task sets
 - **Smaller dataset size:** these reduce the model's ability to accurately infer how to respond as it will have fewer examples it was trained on
@@ -588,7 +583,7 @@ _Using the base Transformer model presented in the **Attention is All You Need**
 - Comparing **FLAN-T5** **_full-tuning_** to **_LoRA tuning_**, while not AS accurate, are only a few percentage points off and still improve overall accuracy quite a bit (with the bonus of a lower footprint)
 - While the field is obviously still evolving, choosing a **LoRA rank** between 16 to 512 appears to have the best accuracy when evaluated with **BLEU** and **ROUGE**
 
-#### Prompt Tuning / Soft Prompts (Additive PEFT)
+#### Prompt Tuning / Soft Prompts (Additive PEFT) {#prompt-tuning}
 
 - (Definitely harder to understand this one...)
 - Prompt tuning is more effective with larger models
@@ -647,48 +642,53 @@ A _human labeler_ scores a dataset of completions by the original model based on
 
 ### Reward Model and Fine-tuning with Reinforcement Learning
 
-- Can take the place of expensive human labeler
+- Can take the place of expensive human labelers (lots of people verifying results)
 - Start with a model that already has a good performance on your task
-- Steps in the reward model process:
-  1. Dataset feeds into LLM
-  2. LLM passes output to Reward Model
-  3. Reward model evaluates and gives a reward value (negative values are less rewarding, positive are more)
-  4. This reward value and pair are sent to the RL algorithm
-  5. RL Algorithm passes updates onto LLM
-  6. This will continue until it reaches a threshold example of where the model is aligned (i.e. reward amount) OR a total number of iterations
-- **RL Algorithm | Proximal Policy Optimization (PPO)**, good, but complicated and tricky to get working
-  - The **Proximal** in **PPO** refers to the constraint that limits the distance between the new and old policy, which prevents the agent from taking large steps in the policy space that could lead to catastrophic changes in behavior.
-  - Losses and Rewards in Phase 1 are fed into Phase 2
-  - Model updates are made in a _trust region_
+- An example would be [Meta AI's RoBERTa-based hate speech model](https://huggingface.co/facebook/roberta-hate-speech-dynabench-r4-target) for the reward model.
+  - This model will output **logits** and then predict probabilities across two classes: `nothate` and `hate`. The logits of the output `nothate` will be taken as a positive reward. Then, the model will be fine-tuned with PPO using those reward values.
+
+Steps in the reward model process:
+
+1. Dataset feeds into LLM
+2. LLM passes output to Reward Model
+3. Reward model evaluates and gives a reward value (negative values are less rewarding, positive are more)
+4. This reward value and `reference value | given value` pair are sent to the RL algorithm
+5. RL Algorithm passes updates onto LLM
+6. This will continue until it reaches a threshold example of where the model is aligned (i.e. reward amount) _OR_ a total number of iterations
+
+**Proximal Policy Optimization (PPO) (Reinforcement Learning Algorithm)**, good, but complicated and tricky to get working
+
+- The **Proximal** in **PPO** refers to the constraint that limits the distance between the new and old policy, which prevents the agent from taking large steps in the policy space that could lead to catastrophic changes in behavior.
+- Losses and Rewards in Phase 1 are fed into Phase 2
+- Model updates are made in a _trust region_
 - Although **PPO** is the most popular as it balances complexity and performance, there are other algorithms available such as **Q-Learning**
 
 ### Reward Hacking
 
-- Agent could learn to cheat the system
-- Example would be a toxicity reward model by including exaggerated language that gets a high score (most amazing, wonderful product) or words that don't make sense but DO get a good score (Beautiful love and world peace for all).
-- Freeze the original weights of the reference model and use 2 models to compare results - **Kullback-Leibler (KL) Divergence Shift Penalty** is a statistical measure of the difference of 2 probability distributions.
-  - Included in many machine learning libraries
-  - Generated for EVERY token in the library
-  - A big compute process, so more GPUs
-- Divergence penalty is then added to the reward to bring hacked values down.
-- Run original model with reward model to get overall toxicity score
-- Run human-aligned model the same
+- Without some oversight, an Agent could learn to cheat the system
+  - Examples would be a toxicity reward model by including exaggerated language that gets a high score (`most amazing, wonderful, life-saving, product`) or words that don't make sense but DO get a good score (`A beautiful love and world peace for all` when referring to a book).
+- Freeze the original weights of the reference model and use 2 models to compare results using...
 
-### Kullback-Leibler Divergence Shift Penalty | KL Divergence
+#### Kullback-Leibler (KL) Divergence
 
+- Kullback-Leibler (KL) Divergence Shift Penalty a statistical measure of the difference of 2 probability distributions.
 - Concept encountered in field of reinforcement learning, particularly when using the **Proximal Policy Optimization (PPO)**
 - Mathematical measure of difference between 2 probability distributions
 - PPO uses **KL divergence** to introduce a constraint that limits the changes to the LLM weights to prevent dramatic changes from the original model.
+- Included in many machine learning libraries
+- Generated for EVERY token in the library
+- A big compute process, so more GPUs
+- Divergence penalty is then added to the reward to bring hacked values down.
+- Run original model _with_ reward model to get overall toxicity score
 
-## Scaling Human Feedback
+## Active Research: Scaling Human Feedback
 
-- To get good feedback, this could require 10's of thousands of human-preference labels (lots of people needed)
-  - _Active area of research_
+- To get good feedback, this could require 10's of thousands of human-preference labels (i.e. _**lots of people**_)
 - Model self-supervision: **Constitutional AI**
   - A method for training models using a set of rules and principals that govern the models behavior
     - Rules such as obeying legal rules
-    - Most helpful, honest, and harmless
-    - Though make sure the response prioritizes legal, ethical, or moral activities
+    - Most **HHH**: helpful, honest, and harmless
+    - Ensure responses _prioritize legal, ethical, or moral activities_
   - Together with a set of sample prompts
   - Train the model to self-critique
 - _In Constitutional AI, we train a model to choose between different responses:_ This is the role of the preference model, that will learn what responses are preferred following the constitutional principles.
@@ -702,29 +702,10 @@ A _human labeler_ scores a dataset of completions by the original model based on
   2. Ask the model about preferred responses (given the 3 responses to each prompt method discussed with **RLHF**)
   3. Feed those into the reward model (and if using the base model for divergence shift)
   4. Further _fine-tune_ your LLM based on those preferences
-  5. **Constitutional LLM**!
 
-## Lab 3 - Fine-Tune FLAN-T5 to Generate More-Positive Summaries
+---
 
-- **NOTE: DO NOT MIX AND MATCH TOKENIZERS BETWEEN MODEL TYPES:** will see pretty bad results if you do this
-- **IMPORTANT: Make sure you understand which index is the `hate` and `nothate` (or similar for other models) and use the correct index (you wouldn't want to optimize for `hate`)**
-- **RLHF** with **PEFT**
-
-### Libraries:
-
-- torch (pytorch)
-- torchdata
-- transformers
-  - AutoModelForSequenceClassification - used to see if a sequence of text contains hate-speech or not (with a distribution)
-- datasets (10,000s of data sets)
-- evaluate
-- rouge_score
-- peft
-- trl (trainer)
-  - PPOTrainer, PPOConfig, AutoModelForSeq2SeqLMWithValueHead (required when we do PPO training)
-- tqdm (progress bars in notebooks)
-
-### General Steps
+## Lab General Steps (For Future Reference)
 
 1. AWS - Use the search bar to open Amazon Sagemaker AI.
 2. In Amazon Sagemaker AI, go to the left sidebar and click on Studio under Applications and IDEs.
@@ -749,7 +730,7 @@ A _human labeler_ scores a dataset of completions by the original model based on
 - How will your model be used?
 - Reduce the size of the LLM while retaining accuracy and performance
 
-### Techniques
+### Techniques {#optimization}
 
 - **Distillation**
 
@@ -782,19 +763,19 @@ A _human labeler_ scores a dataset of completions by the original model based on
 
 ## Generative AI Project Lifecycle Cheat Sheet
 
-| Techniques                    | Training Duration                                                                           | Customization                                                                                                                               | Objective                                 | Expertise   |
-| ----------------------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- | ----------- |
-| Pre-training                  | Days to weeks to months, though you _probably will start with an existing foundation model_ | Determine model architecture, size and tokenizer. Choose vocab size and # of tokens for input/context. Large amount of domain training data | Next-Token Prediction                     | High        |
-| Prompt Engineering            | Not Required                                                                                | No model weights. Only prompt customization.                                                                                                | Increase task performance                 | Low         |
-| Prompt Tuning and Fine-Tuning | Minutes to hours                                                                            | Tune for specific tasks. Add domain-specific data. Update LLM model or adapter weights                                                      | Increase task performance                 | Medium      |
-| [RLHF](#rlhf)                 | Minutes to hours similar to fine-tuning                                                     | Need separate reward model to align with human goals (**HHH**). Update LLM model or adapter weights                                         | Increase alignment with human preferences | Medium-High |
-| Compression/Optimization      | Minutes to hours                                                                            | Reduce model size through pruning, weight quantization, distillation. Smaller size, faster inference                                        | Increase inference performance            | Medium      |
+| Techniques                                               | Training Duration                                                                           | Customization                                                                                                                               | Objective                                 | Expertise   |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- | ----------- |
+| [Pre-Training](#pretrain)                                | Days to weeks to months, though you _probably will start with an existing foundation model_ | Determine model architecture, size and tokenizer. Choose vocab size and # of tokens for input/context. Large amount of domain training data | Next-Token Prediction                     | High        |
+| [Prompt Engineering](#prompt-engineering)                | Not Required                                                                                | No model weights. Only prompt customization.                                                                                                | Increase task performance                 | **Low**     |
+| [Prompt Tuning](#prompt-tuning) and [Fine-Tuning](#peft) | **Minutes to hours**                                                                        | Tune for specific tasks. Add domain-specific data. Update LLM model or adapter weights                                                      | Increase task performance                 | **Medium**  |
+| [RLHF](#rlhf)                                            | **Minutes to hours** similar to fine-tuning                                                 | Need separate reward model to align with human goals (**HHH**). Update LLM model or adapter weights                                         | Increase alignment with human preferences | Medium-High |
+| [Compression/Optimization](#optimization)                | **Minutes to hours**                                                                        | Reduce model size through pruning, weight quantization, distillation. Smaller size, faster inference                                        | Increase inference performance            | **Medium**  |
 
-## Using the LLM in Applications
+## Using an LLM in Applications {#llm-calc}
 
 - Built models / LLMs can struggle with:
   - **Temporal Data:** Data that changes over time is hard when a model is built on a specific date (i.e. who is the current president of the USA?)
-  - **Calculations:**{#llm-calc} Difficulty of the problem (such as `What is 40366/439?`) but returns a _close_ to the correct answer. LLMs DO NOT perform calculations, just look at tokens for best answer.
+  - **Calculations:** Difficulty of the problem (such as `What is 40366/439?`) but returns a _close_ to the correct answer. LLMs DO NOT perform calculations, just look at tokens for best answer.
   - **Hallucinations:** Tendency to generate text even if they don't know the answer
   - **Complex Problems:** Problems/prompts with multiple steps in the process
   - Can often overcome these by connecting to other systems or APIs
