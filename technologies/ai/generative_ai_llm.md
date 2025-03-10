@@ -1,117 +1,65 @@
 # Generative AI with Large Language Models (LLM)
 
+**Table of Contents**
+
+- [Introduction to LLMs](#intro)
+
+  - [Generative AI & LLMs](#llm)
+  - [History Lesson - Before Transformers](#history)
+  - [Transformers](#transformers)
+
+    - [Encoder / Decoder Model Types](#model-types)
+
+  - [Prompt Engineering](#prompt-engineering)
+  - [Generative Configuration](#genconfig)
+  - [Generative AI Project Lifecycle](#lifecycle)
+  - [Pre-Training LLMs](#pretrain)
+
+- [Tuning](#tuning)
+
+  - [Instruction Fine Tuning](#instrucitontuning)
+  - [Model Evaluation (ROUGE / BLEU)](#eval)
+  - [Parameter Efficient Fine-Tuning (PEFT)](#peft)
+
+- Reinforcement Learning from Human Feedback
+
+  - [Aligning Models with Human Values (RLHF)](#rlhf)
+
+    - [Reward Model](#reward)
+
+  - [Active Research - Scaling Human Feedback (Constitutional AI)](#conai)
+
+- LLM-Powered Applications
+
+  - [Model Optimizations For Deployment](#optimization)
+  - [Using an LLM in Applications](#llm-calc)
+  - [LLM Application Architectures](#llm-archs)
+
+- Appendix
+
+  - [Contributors](#contributors)
+  - [Resources](#resources)
+  - [Lab General Steps](#labs)
+
+---
+
+## High-Level Overview
+
 - **Prerequisites:** _Basic data science and Python_
 - **Course Objectives**: explore steps in generative AI lifecycle: scoping, select model, optimize model for deployment, and integrate into application. Specifically around LLM (which is primarily around text)
 - [FAQ for GenAI with LLMs Labs](https://community.deeplearning.ai/t/genai-with-llms-lab-faq/374869)
 - If you cannot find an answer in the FAQs, you can [search for or create a new post here](https://community.deeplearning.ai/c/course-q-a/generative-ai-with-large-language-models/328)
 - [Lecture notes are available on the DeepLearning.AI Website](https://community.deeplearning.ai/t/genai-with-llms-lecture-notes/361913)
-
-## Contributors
-
-- Ehsan Kamalinejad, Ph.D. - Machine Learning Applied Scientist, AWS
-- Nashlie Sephus, Ph.D. - Principal Technology Evangelist for Amazon AI, AWS
-- Saleh Soltan, Ph.D. - Senior Applied Scientist, Amazon Alexa
-- Heiko Hotz - Senior Solutions Architect for AI & Machine Learning, AWS
-- Philipp Schmid - Technical Lead, Hugging Face and AWS ML Hero
-
-## Resources
-
-### Generative AI Lifecycle
-
-- [Generative AI on AWS: Building Context-Aware, Multi-modal Reasoning Applications](https://www.amazon.com/Generative-AI-AWS-Multimodal-Applications/dp/1098159225/): This O'Reilly book dives deep into all phases of the generative AI lifecycle including model selection, fine-tuning, adapting, evaluation, deployment, and runtime optimizations.
-
-### Transformer Architecture
-
-- [Attention is All You Need](https://arxiv.org/pdf/1706.03762): This paper introduced the Transformer architecture, with the core “self-attention” mechanism. This article was the foundation for LLMs.
-- [BLOOM: BigScience 176B Model](https://arxiv.org/abs/2211.05100): BLOOM is a open-source LLM with 176B parameters trained in an open and transparent way. In this paper, the authors present a detailed discussion of the dataset and process used to train the model.
-  - [You can also see a high-level overview of the model here](https://bigscience.notion.site/BLOOM-BigScience-176B-Model-ad073ca07cdf479398d5f95d88e218c4)
-- [Vector Space Models](https://www.coursera.org/learn/classification-vector-spaces-in-nlp/home/week/3): Series of lessons from DeepLearning.AI's Natural Language Processing specialization discussing the basics of vector space models and their use in language modeling
-
-### Pre-training and Scaling Laws
-
-- [Scaling Laws for Neural Language Models](https://arxiv.org/abs/2001.08361): Empirical study by researchers at OpenAI exploring the scaling laws for large language models.
-
-### Model Architectures and Pre-Training Objectives
-
-- [What Language Model Architecture and Pre-training Objective Work Best for Zero-Shot Generalization?](https://arxiv.org/pdf/2204.05832.pdf): The paper examines modeling choices in large pre-trained language models and identifies the optimal approach for zero-shot generalization.
-- [Hugging Face Tasks](https://huggingface.co/tasks) and [Model Hub](https://huggingface.co/models): Collection of resources to tackle varying machine learning tasks using the HuggingFace library.
-- [Hugging face `transformers` package](https://huggingface.co/docs/transformers/index)
-- [Hugging face `dialogsum` dataset](https://huggingface.co/datasets/knkarthick/dialogsum)
-- [LLaMA: Open and Efficient Foundation Language Models](https://arxiv.org/pdf/2302.13971.pdf): Article from Meta AI proposing Efficient LLMs (their model with 13B parameters outperform GPT3 with 175B parameters on most benchmarks)
-
-### Scaling Laws and Compute-optimal Models {#chinchilla-paper}
-
-- [Language Models are Few-Shot Learners](https://arxiv.org/pdf/2005.14165.pdf): This paper investigates the potential of few-shot learning in Large Language Models.
-- [Training Compute-Optimal Large Language Models](https://arxiv.org/pdf/2203.15556.pdf): Study from DeepMind to evaluate the optimal model size and number of tokens for training LLMs. Also known as “Chinchilla Paper”
-- [BloombergGPT: A Large Language Model for Finance](https://arxiv.org/pdf/2303.17564.pdf): LLM trained specifically for the finance domain, a good example that tried to follow chinchilla laws
-
-### Multi-task, instruction fine-tuning
-
-- [Scaling Instruction-Fine-tuned Language Models](https://arxiv.org/pdf/2210.11416.pdf): Scaling fine-tuning with a focus on task, model size and chain-of-thought data
-- [Introducing FLAN: More generalizable Language Models with Instruction Fine-Tuning](https://ai.googleblog.com/2021/10/introducing-flan-more-generalizable.html): This blog (and article) explores instruction fine-tuning, which aims to make language models better at performing NLP tasks with zero-shot inference.
-
-### Model Evaluation Metrics
-
-- [HELM - Holistic Evaluation of Language Models](https://crfm.stanford.edu/helm/latest/): HELM is a living benchmark to evaluate Language Models more transparently.
-- [General Language Understanding Evaluation (GLUE) benchmark](https://openreview.net/pdf?id=rJ4km2R5t7): This paper introduces GLUE, a benchmark for evaluating models on diverse natural language understanding (NLU) tasks and emphasizing the importance of improved general NLU systems.
-- [SuperGLUE](https://super.gluebenchmark.com/): This paper introduces SuperGLUE, a benchmark designed to evaluate the performance of various NLP models on a range of challenging language understanding tasks.
-- [ROUGE: A Package for Automatic Evaluation of Summaries](https://aclanthology.org/W04-1013.pdf): This paper introduces and evaluates four different measures (ROUGE-N, ROUGE-L, ROUGE-W, and ROUGE-S) in the ROUGE summarization evaluation package, which assess the quality of summaries by comparing them to ideal human-generated summaries.
-- [Measuring Massive Multitask Language Understanding (MMLU)](https://arxiv.org/pdf/2009.03300.pdf): This paper presents a new test to measure multitask accuracy in text models, highlighting the need for substantial improvements in achieving expert-level accuracy and addressing lopsided performance and low accuracy on socially important subjects.
-- [BigBench-Hard - Beyond the Imitation Game: Quantifying and Extrapolating the Capabilities of Language Models](https://arxiv.org/pdf/2206.04615.pdf): The paper introduces BIG-bench, a benchmark for evaluating language models on challenging tasks, providing insights on scale, calibration, and social bias.
-
-### Parameter- efficient fine tuning (PEFT)
-
-- [Scaling Down to Scale Up: A Guide to Parameter-Efficient Fine-Tuning](https://arxiv.org/pdf/2303.15647.pdf): This paper provides a systematic overview of Parameter-Efficient Fine-tuning (PEFT) Methods in all three categories discussed in the lecture videos.
-- [On the Effectiveness of Parameter-Efficient Fine-Tuning](https://arxiv.org/pdf/2211.15583.pdf): The paper analyzes sparse fine-tuning methods for pre-trained models in NLP.
-
-### LoRA
-
-- [LoRA Low-Rank Adaptation of Large Language Models](https://arxiv.org/pdf/2106.09685.pdf): This paper proposes a parameter-efficient fine-tuning method that makes use of low-rank decomposition matrices to reduce the number of trainable parameters needed for fine-tuning language models.
-- [QLoRA: Efficient Fine-tuning of Quantized LLMs](https://arxiv.org/pdf/2305.14314.pdf): This paper introduces an efficient method for fine-tuning large language models on a single GPU, based on quantization, achieving impressive results on benchmark tests.
-
-### Prompt tuning with soft prompts
-
-- [The Power of Scale for Parameter-Efficient Prompt Tuning](https://arxiv.org/pdf/2104.08691.pdf): The paper explores "prompt tuning," a method for conditioning language models with learned soft prompts, achieving competitive performance compared to full fine-tuning and enabling model reuse for many tasks.
-
-### Reinforcement Learning from Human-Feedback (RLHF)
-
-- [Training language models to follow instructions with human feedback](https://arxiv.org/pdf/2203.02155.pdf): Paper by OpenAI introducing a human-in-the-loop process to create a model that is better at following instructions (InstructGPT)
-- [Learning to summarize from human feedback](https://arxiv.org/pdf/2009.01325.pdf): This paper presents a method for improving language model-generated summaries using a reward-based approach, surpassing human reference summaries/path></svg></a></span><span><span> - .</span></span></p></li></ul>
-
-### Proximal Policy Optimization (PPO)
-
-- [Proximal Policy Optimization Algorithms](https://arxiv.org/pdf/1707.06347.pdf): The paper from researchers at OpenAI that first proposed the PPO algorithm. The paper discusses the performance of the algorithm on a number of benchmark tasks including robotic locomotion and game play.
-- [Direct Preference Optimization: Your Language Model is Secretly a Reward Model](https://arxiv.org/pdf/2305.18290.pdf): This paper presents a simpler and effective method for precise control of large-scale unsupervised language models by aligning them with human preferences.
-- [Toxicity Metric](https://huggingface.co/spaces/evaluate-measurement/toxicity)
-
-### Scaling Human Feedback
-
-- [Constitutional AI: Harmlessness from AI Feedback](https://arxiv.org/pdf/2212.08073.pdf): This paper introduces a method for training a harmless AI assistant without human labels, allowing better control of AI behavior with minimal human input.
-
-### Advanced Prompting Techniques
-
-- [Chain-of-thought Prompting Elicits Reasoning in Large Language Models](https://arxiv.org/pdf/2201.11903.pdf): Paper by researchers at Google exploring how chain-of-thought prompting improves the ability of LLMs to perform complex reasoning.
-- [PAL: Program-aided Language Models](https://arxiv.org/abs/2211.10435): This paper proposes an approach that uses the LLM to read natural language problems and generate programs as the intermediate reasoning steps.
-- [ReAct: Synergizing Reasoning and Acting in Language Models](https://arxiv.org/abs/2210.03629): This paper presents an advanced prompting technique that allows an LLM to make decisions about how to interact with external applications.
-
-### LLM Powered Application Architectures
-
-- [LangChain Library (GitHub)](https://github.com/hwchase17/langchain): This library is aimed at assisting in the development of those types of applications, such as Question Answering, Chatbots and other Agents. [You can read the documentation here](https://docs.langchain.com/docs/)
-- [Who Owns the Generative AI Platform?](https://a16z.com/2023/01/19/who-owns-the-generative-ai-platform/): The article examines the market dynamics and business models of generative AI.
+- Major Topics / Definitions
+  - Training
+  - Tuning
+  - Deployment
 
 ---
 
-# Major Topics / Definitions
-
-[LLM](#llm)
-
-- Training
-- Tuning
-- Deployment
-
 ---
 
-# Introduction to LLMs, Pre-Training, and Scaling Laws
+# Introduction to LLMs, Pre-Training, and Scaling Laws{#intro}
 
 - **Who is this for?**
   - AI enthusiasts, engineers, and data scientists looking to to learn technical foundations of how LLMs work
@@ -136,9 +84,7 @@
   - _Smaller:_ LLaMa, PaLM, BERT (110million params in Bert-base)
 - LLMs generally use [_Prompt Programming_](#prompt-engineering) and very little _Syntax Programming_
 
----
-
-## Use Cases
+### Use Cases
 
 - Chatbot
 - Write an essay
@@ -149,7 +95,7 @@
 
 ---
 
-## History Lesson - Text Generation Before Transformers
+## History Lesson - Text Generation Before Transformers {#history}
 
 - **Recurrent Neural Networks, or RNN** were used for text generation in the past
   - They would use the previous few words to predict the text and would often get it wrong
@@ -161,7 +107,7 @@
 
 ---
 
-## Transformer Architecture
+## Transformer Architecture {#transformers}
 
 ![General Architecture](architecture.png)
 
@@ -215,7 +161,7 @@ Translate French to English
 4. This then loops back to the **decoder** passing in the last-generated output token, _triggering the generation of the next token_ until the model predicts an _end-of-sequence_ token.
 5. Tokens are then _detokenized_ into words, and you have the output
 
-### Encoder / Decoder Model Types
+### Encoder / Decoder Model Types {#model-types}
 
 > ---
 >
@@ -319,7 +265,7 @@ Translate French to English
 
 ---
 
-## Generative Configuration
+## Generative Configuration {#genconfig}
 
 - **Inference parameters** - exposed set of configuration parameters that can be set for a model. These are different than _training_ and _tuning_
 
@@ -338,7 +284,7 @@ Translate French to English
 
 ---
 
-## Generative AI Project Lifecycle
+## Generative AI Project Lifecycle {#lifecycle}
 
 ![Generative AI Project Lifecycle](generative-ai-lifecycle.png)
 
@@ -359,6 +305,16 @@ Translate French to English
 4. **APPLICATION INTEGRATION**
    - Optimize and deploy model for inference
    - Augment model and build _LLM-powered applications_
+
+### Generative AI Project Lifecycle Cheat Sheet
+
+| Techniques                                               | Training Duration                                                                           | Customization                                                                                                                               | Objective                                 | Expertise   |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- | ----------- |
+| [Pre-Training](#pretrain)                                | Days to weeks to months, though you _probably will start with an existing foundation model_ | Determine model architecture, size and tokenizer. Choose vocab size and # of tokens for input/context. Large amount of domain training data | Next-Token Prediction                     | High        |
+| [Prompt Engineering](#prompt-engineering)                | Not Required                                                                                | No model weights. Only prompt customization.                                                                                                | Increase task performance                 | **Low**     |
+| [Prompt Tuning](#prompt-tuning) and [Fine-Tuning](#peft) | **Minutes to hours**                                                                        | Tune for specific tasks. Add domain-specific data. Update LLM model or adapter weights                                                      | Increase task performance                 | **Medium**  |
+| [RLHF](#rlhf)                                            | **Minutes to hours** similar to fine-tuning                                                 | Need separate reward model to align with human goals (**HHH**). Update LLM model or adapter weights                                         | Increase alignment with human preferences | Medium-High |
+| [Compression/Optimization](#optimization)                | **Minutes to hours**                                                                        | Reduce model size through pruning, weight quantization, distillation. Smaller size, faster inference                                        | Increase inference performance            | **Medium**  |
 
 ---
 
@@ -433,7 +389,7 @@ Example: _1 petaflop/s-day = 1 quadrillion floating operations per second_
 
 ---
 
-# Full Fine-Tuning and Parameter Efficient Fine-Tuning (PEFT)
+# Full Fine-Tuning and Parameter Efficient Fine-Tuning (PEFT) {#tuning}
 
 - Can train a model off a large dataset from the web
 - Then _fine-tune_ the model with a specific set of data to improve the performance and adaptability for specific tasks.
@@ -445,7 +401,7 @@ Example: _1 petaflop/s-day = 1 quadrillion floating operations per second_
 
 ---
 
-## Instruction Fine Tuning
+## Instruction Fine Tuning {#instructtuning}
 
 - _fine-tuning_ with instruction prompts
 - Drawbacks of using few-shot inferences this way is the prompts take up valuable space in the context window that could include other helpful information
@@ -511,7 +467,7 @@ Identify the places:
 
 ---
 
-## Model Evaluation
+## Model Evaluation {#eval}
 
 How can you evaluate your _fine-tuned_ model over the _pre-trained_ model?
 
@@ -600,6 +556,8 @@ _Using the base Transformer model presented in the **Attention is All You Need**
 
 ---
 
+---
+
 # Reinforcement Learning from Human Feedback
 
 ## Aligning Models with Human Values {#rlhf}
@@ -640,7 +598,7 @@ A _human labeler_ scores a dataset of completions by the original model based on
     ```
   - This way, the results can easily be interpreted as to which is preferred
 
-### Reward Model and Fine-tuning with Reinforcement Learning
+### Reward Model and Fine-tuning with Reinforcement Learning {#reward}
 
 - Can take the place of expensive human labelers (lots of people verifying results)
 - Start with a model that already has a good performance on your task
@@ -681,7 +639,9 @@ Steps in the reward model process:
 - Divergence penalty is then added to the reward to bring hacked values down.
 - Run original model _with_ reward model to get overall toxicity score
 
-## Active Research: Scaling Human Feedback
+---
+
+## Active Research: Scaling Human Feedback {#conai}
 
 - To get good feedback, this could require 10's of thousands of human-preference labels (i.e. _**lots of people**_)
 - Model self-supervision: **Constitutional AI**
@@ -704,21 +664,6 @@ Steps in the reward model process:
   4. Further _fine-tune_ your LLM based on those preferences
 
 ---
-
-## Lab General Steps (For Future Reference)
-
-1. AWS - Use the search bar to open Amazon Sagemaker AI.
-2. In Amazon Sagemaker AI, go to the left sidebar and click on Studio under Applications and IDEs.
-3. Click on Open Studio.
-4. Click on Launch personal Studio. This will launch a new tab or window.
-5. Welcome to SageMaker Studio! If you see a pop-up asking you to take a quick tour. Please click Skip Tour for now.
-6. On the left sidebar, click on the JupyterLab icon under Applications.
-7. This will show the available spaces. Click the Run button on the sagemaker-space.
-8. The text will change to Starting for about a minute. Wait for it to finish then click on the Open button. This will launch a new tab or window showing the JupyterLab environment.
-9. Launch the Terminal from the JupyterLab environment.
-10. Upload your notebook. Double-click on the notebook to open it.
-11. A pop-up will appear asking you to select the kernel. Choose "Python 3 (ipykernel)".
-12. Follow the lab instructions in the Lab_3_fine_tune_model_to_detoxify_summaries.ipynb notebook.
 
 ---
 
@@ -761,15 +706,7 @@ Steps in the reward model process:
     - Post-training
   - If only a small % of weights are close to 0, this may not help much
 
-## Generative AI Project Lifecycle Cheat Sheet
-
-| Techniques                                               | Training Duration                                                                           | Customization                                                                                                                               | Objective                                 | Expertise   |
-| -------------------------------------------------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- | ----------- |
-| [Pre-Training](#pretrain)                                | Days to weeks to months, though you _probably will start with an existing foundation model_ | Determine model architecture, size and tokenizer. Choose vocab size and # of tokens for input/context. Large amount of domain training data | Next-Token Prediction                     | High        |
-| [Prompt Engineering](#prompt-engineering)                | Not Required                                                                                | No model weights. Only prompt customization.                                                                                                | Increase task performance                 | **Low**     |
-| [Prompt Tuning](#prompt-tuning) and [Fine-Tuning](#peft) | **Minutes to hours**                                                                        | Tune for specific tasks. Add domain-specific data. Update LLM model or adapter weights                                                      | Increase task performance                 | **Medium**  |
-| [RLHF](#rlhf)                                            | **Minutes to hours** similar to fine-tuning                                                 | Need separate reward model to align with human goals (**HHH**). Update LLM model or adapter weights                                         | Increase alignment with human preferences | Medium-High |
-| [Compression/Optimization](#optimization)                | **Minutes to hours**                                                                        | Reduce model size through pruning, weight quantization, distillation. Smaller size, faster inference                                        | Increase inference performance            | **Medium**  |
+---
 
 ## Using an LLM in Applications {#llm-calc}
 
@@ -862,7 +799,9 @@ Here are some examples.
     - components such as prompt templates, agents, and memory components for working with LLMs.
   - _It's primary purpose is to chain together different components and create advanced use cases around LLMs, such as chatbots, Generative Question-Answering (GQA), and summarization._
 
-## LLM Application Architectures
+---
+
+## LLM Application Architectures {#llm-archs}
 
 - **Infrastructure:** On prem/cloud, training, fine-tuning, serving, application components
 - **AI / Modeling Layer**:
@@ -880,3 +819,121 @@ Here are some examples.
   - Charges for training your model, running a model, etc
 - SageMaker can autogenerate a _Notebook_ to get you started
 - Lots of tutorials and example notebooks
+
+---
+
+---
+
+# Appendix
+
+## Contributors {#contributors}
+
+- Ehsan Kamalinejad, Ph.D. - Machine Learning Applied Scientist, AWS
+- Nashlie Sephus, Ph.D. - Principal Technology Evangelist for Amazon AI, AWS
+- Saleh Soltan, Ph.D. - Senior Applied Scientist, Amazon Alexa
+- Heiko Hotz - Senior Solutions Architect for AI & Machine Learning, AWS
+- Philipp Schmid - Technical Lead, Hugging Face and AWS ML Hero
+
+---
+
+## Resources (#resources)
+
+### Generative AI Lifecycle
+
+- [Generative AI on AWS: Building Context-Aware, Multi-modal Reasoning Applications](https://www.amazon.com/Generative-AI-AWS-Multimodal-Applications/dp/1098159225/): This O'Reilly book dives deep into all phases of the generative AI lifecycle including model selection, fine-tuning, adapting, evaluation, deployment, and runtime optimizations.
+
+### Transformer Architecture
+
+- [Attention is All You Need](https://arxiv.org/pdf/1706.03762): This paper introduced the Transformer architecture, with the core “self-attention” mechanism. This article was the foundation for LLMs.
+- [BLOOM: BigScience 176B Model](https://arxiv.org/abs/2211.05100): BLOOM is a open-source LLM with 176B parameters trained in an open and transparent way. In this paper, the authors present a detailed discussion of the dataset and process used to train the model.
+  - [You can also see a high-level overview of the model here](https://bigscience.notion.site/BLOOM-BigScience-176B-Model-ad073ca07cdf479398d5f95d88e218c4)
+- [Vector Space Models](https://www.coursera.org/learn/classification-vector-spaces-in-nlp/home/week/3): Series of lessons from DeepLearning.AI's Natural Language Processing specialization discussing the basics of vector space models and their use in language modeling
+
+### Pre-training and Scaling Laws
+
+- [Scaling Laws for Neural Language Models](https://arxiv.org/abs/2001.08361): Empirical study by researchers at OpenAI exploring the scaling laws for large language models.
+
+### Model Architectures and Pre-Training Objectives
+
+- [What Language Model Architecture and Pre-training Objective Work Best for Zero-Shot Generalization?](https://arxiv.org/pdf/2204.05832.pdf): The paper examines modeling choices in large pre-trained language models and identifies the optimal approach for zero-shot generalization.
+- [Hugging Face Tasks](https://huggingface.co/tasks) and [Model Hub](https://huggingface.co/models): Collection of resources to tackle varying machine learning tasks using the HuggingFace library.
+- [Hugging face `transformers` package](https://huggingface.co/docs/transformers/index)
+- [Hugging face `dialogsum` dataset](https://huggingface.co/datasets/knkarthick/dialogsum)
+- [LLaMA: Open and Efficient Foundation Language Models](https://arxiv.org/pdf/2302.13971.pdf): Article from Meta AI proposing Efficient LLMs (their model with 13B parameters outperform GPT3 with 175B parameters on most benchmarks)
+
+### Scaling Laws and Compute-optimal Models {#chinchilla-paper}
+
+- [Language Models are Few-Shot Learners](https://arxiv.org/pdf/2005.14165.pdf): This paper investigates the potential of few-shot learning in Large Language Models.
+- [Training Compute-Optimal Large Language Models](https://arxiv.org/pdf/2203.15556.pdf): Study from DeepMind to evaluate the optimal model size and number of tokens for training LLMs. Also known as “Chinchilla Paper”
+- [BloombergGPT: A Large Language Model for Finance](https://arxiv.org/pdf/2303.17564.pdf): LLM trained specifically for the finance domain, a good example that tried to follow chinchilla laws
+
+### Multi-task, instruction fine-tuning
+
+- [Scaling Instruction-Fine-tuned Language Models](https://arxiv.org/pdf/2210.11416.pdf): Scaling fine-tuning with a focus on task, model size and chain-of-thought data
+- [Introducing FLAN: More generalizable Language Models with Instruction Fine-Tuning](https://ai.googleblog.com/2021/10/introducing-flan-more-generalizable.html): This blog (and article) explores instruction fine-tuning, which aims to make language models better at performing NLP tasks with zero-shot inference.
+
+### Model Evaluation Metrics
+
+- [HELM - Holistic Evaluation of Language Models](https://crfm.stanford.edu/helm/latest/): HELM is a living benchmark to evaluate Language Models more transparently.
+- [General Language Understanding Evaluation (GLUE) benchmark](https://openreview.net/pdf?id=rJ4km2R5t7): This paper introduces GLUE, a benchmark for evaluating models on diverse natural language understanding (NLU) tasks and emphasizing the importance of improved general NLU systems.
+- [SuperGLUE](https://super.gluebenchmark.com/): This paper introduces SuperGLUE, a benchmark designed to evaluate the performance of various NLP models on a range of challenging language understanding tasks.
+- [ROUGE: A Package for Automatic Evaluation of Summaries](https://aclanthology.org/W04-1013.pdf): This paper introduces and evaluates four different measures (ROUGE-N, ROUGE-L, ROUGE-W, and ROUGE-S) in the ROUGE summarization evaluation package, which assess the quality of summaries by comparing them to ideal human-generated summaries.
+- [Measuring Massive Multitask Language Understanding (MMLU)](https://arxiv.org/pdf/2009.03300.pdf): This paper presents a new test to measure multitask accuracy in text models, highlighting the need for substantial improvements in achieving expert-level accuracy and addressing lopsided performance and low accuracy on socially important subjects.
+- [BigBench-Hard - Beyond the Imitation Game: Quantifying and Extrapolating the Capabilities of Language Models](https://arxiv.org/pdf/2206.04615.pdf): The paper introduces BIG-bench, a benchmark for evaluating language models on challenging tasks, providing insights on scale, calibration, and social bias.
+
+### Parameter- efficient fine tuning (PEFT)
+
+- [Scaling Down to Scale Up: A Guide to Parameter-Efficient Fine-Tuning](https://arxiv.org/pdf/2303.15647.pdf): This paper provides a systematic overview of Parameter-Efficient Fine-tuning (PEFT) Methods in all three categories discussed in the lecture videos.
+- [On the Effectiveness of Parameter-Efficient Fine-Tuning](https://arxiv.org/pdf/2211.15583.pdf): The paper analyzes sparse fine-tuning methods for pre-trained models in NLP.
+
+### LoRA
+
+- [LoRA Low-Rank Adaptation of Large Language Models](https://arxiv.org/pdf/2106.09685.pdf): This paper proposes a parameter-efficient fine-tuning method that makes use of low-rank decomposition matrices to reduce the number of trainable parameters needed for fine-tuning language models.
+- [QLoRA: Efficient Fine-tuning of Quantized LLMs](https://arxiv.org/pdf/2305.14314.pdf): This paper introduces an efficient method for fine-tuning large language models on a single GPU, based on quantization, achieving impressive results on benchmark tests.
+
+### Prompt tuning with soft prompts
+
+- [The Power of Scale for Parameter-Efficient Prompt Tuning](https://arxiv.org/pdf/2104.08691.pdf): The paper explores "prompt tuning," a method for conditioning language models with learned soft prompts, achieving competitive performance compared to full fine-tuning and enabling model reuse for many tasks.
+
+### Reinforcement Learning from Human-Feedback (RLHF)
+
+- [Training language models to follow instructions with human feedback](https://arxiv.org/pdf/2203.02155.pdf): Paper by OpenAI introducing a human-in-the-loop process to create a model that is better at following instructions (InstructGPT)
+- [Learning to summarize from human feedback](https://arxiv.org/pdf/2009.01325.pdf): This paper presents a method for improving language model-generated summaries using a reward-based approach, surpassing human reference summaries/path></svg></a></span><span><span> - .</span></span></p></li></ul>
+
+### Proximal Policy Optimization (PPO)
+
+- [Proximal Policy Optimization Algorithms](https://arxiv.org/pdf/1707.06347.pdf): The paper from researchers at OpenAI that first proposed the PPO algorithm. The paper discusses the performance of the algorithm on a number of benchmark tasks including robotic locomotion and game play.
+- [Direct Preference Optimization: Your Language Model is Secretly a Reward Model](https://arxiv.org/pdf/2305.18290.pdf): This paper presents a simpler and effective method for precise control of large-scale unsupervised language models by aligning them with human preferences.
+- [Toxicity Metric](https://huggingface.co/spaces/evaluate-measurement/toxicity)
+
+### Scaling Human Feedback
+
+- [Constitutional AI: Harmlessness from AI Feedback](https://arxiv.org/pdf/2212.08073.pdf): This paper introduces a method for training a harmless AI assistant without human labels, allowing better control of AI behavior with minimal human input.
+
+### Advanced Prompting Techniques
+
+- [Chain-of-thought Prompting Elicits Reasoning in Large Language Models](https://arxiv.org/pdf/2201.11903.pdf): Paper by researchers at Google exploring how chain-of-thought prompting improves the ability of LLMs to perform complex reasoning.
+- [PAL: Program-aided Language Models](https://arxiv.org/abs/2211.10435): This paper proposes an approach that uses the LLM to read natural language problems and generate programs as the intermediate reasoning steps.
+- [ReAct: Synergizing Reasoning and Acting in Language Models](https://arxiv.org/abs/2210.03629): This paper presents an advanced prompting technique that allows an LLM to make decisions about how to interact with external applications.
+
+### LLM Powered Application Architectures
+
+- [LangChain Library (GitHub)](https://github.com/hwchase17/langchain): This library is aimed at assisting in the development of those types of applications, such as Question Answering, Chatbots and other Agents. [You can read the documentation here](https://docs.langchain.com/docs/)
+- [Who Owns the Generative AI Platform?](https://a16z.com/2023/01/19/who-owns-the-generative-ai-platform/): The article examines the market dynamics and business models of generative AI.
+
+---
+
+## Lab General Steps (For Future Reference) {#labs}
+
+1. AWS - Use the search bar to open Amazon Sagemaker AI.
+2. In Amazon Sagemaker AI, go to the left sidebar and click on Studio under Applications and IDEs.
+3. Click on Open Studio.
+4. Click on Launch personal Studio. This will launch a new tab or window.
+5. Welcome to SageMaker Studio! If you see a pop-up asking you to take a quick tour. Please click Skip Tour for now.
+6. On the left sidebar, click on the JupyterLab icon under Applications.
+7. This will show the available spaces. Click the Run button on the sagemaker-space.
+8. The text will change to Starting for about a minute. Wait for it to finish then click on the Open button. This will launch a new tab or window showing the JupyterLab environment.
+9. Launch the Terminal from the JupyterLab environment.
+10. Upload your notebook. Double-click on the notebook to open it.
+11. A pop-up will appear asking you to select the kernel. Choose "Python 3 (ipykernel)".
+12. Follow the lab instructions in the Lab_3_fine_tune_model_to_detoxify_summaries.ipynb notebook.
