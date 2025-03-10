@@ -3,7 +3,6 @@
 **Table of Contents**
 
 - [Introduction to LLMs](#intro)
-
   - [Generative AI & LLMs](#llm)
   - [History Lesson - Before Transformers](#history)
   - [Transformers](#transformers)
@@ -12,29 +11,19 @@
   - [Generative Configuration](#genconfig)
   - [Generative AI Project Lifecycle](#lifecycle)
   - [Pre-Training LLMs](#pretrain)
-
 - [Tuning](#tuning)
-
   - [Instruction Fine Tuning](#instrucitontuning)
   - [Model Evaluation (ROUGE / BLEU)](#eval)
   - [Parameter Efficient Fine-Tuning (PEFT)](#peft)
-
 - Reinforcement Learning from Human Feedback
-
   - [Aligning Models with Human Values (RLHF)](#rlhf)
-
     - [Reward Model](#reward)
-
   - [Active Research - Scaling Human Feedback (Constitutional AI)](#conai)
-
 - LLM-Powered Applications
-
   - [Model Optimizations For Deployment](#optimization)
   - [Using an LLM in Applications](#llm-calc)
   - [LLM Application Architectures](#llm-archs)
-
 - Appendix
-
   - [Contributors](#contributors)
   - [Resources](#resources)
   - [Lab General Steps](#labs)
