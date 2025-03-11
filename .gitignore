@@ -5,3 +5,4 @@ consulting.md
 .prettierrc
 codereview/*.md
 helpers/training
+partners/*
