@@ -2,7 +2,7 @@
 
 - [Back to Table of Contents](toc.md)
 
-Pulled from: https://docs.getdbt.com/best-practices
+Pulled from: <https://docs.getdbt.com/best-practices>
 
 ## Some Main Ideas:
 
@@ -23,10 +23,10 @@ While ideal in production, lots of ephemeral queries and views are not great whe
 
 ## How dbt structures THEIR Projects
 
-- It's crucial to establish consistent and comprehensible norms such that your team’s limited bandwidth for decision making can be spent on unique and difficult problems, not deciding where folders should go or how to name files.
+- It's crucial to establish consistent and comprehensible norms such that your team's limited bandwidth for decision making can be spent on unique and difficult problems, not deciding where folders should go or how to name files.
 - **FOLDER STRUCTURE IS CRITICAL** to find our way around the codebase and understanding the knowledge graph encoded in our project (alongside the DAG (Directed Acyclic Graph showing modeling, dependencies) and the data output into our warehouse) By using folders, and breaking items out, it makes it possible to rebuild all the affected components that build on that data if there is a change: `dbt build --select staging.oxygen+` (in this example, if `oxygen` changes, by adding the `+` to the build, it will build everything that uses `oxygen`)
 
----
+--------------------------------------------------------------------------------
 
 ## [Staging Layer | Atomic Building Blocks](https://docs.getdbt.com/best-practices/how-we-structure/2-staging)
 
@@ -53,25 +53,34 @@ models/staging
 
 - **Sub directories should be based on source system**: We've found this to be the best grouping for most companies, as _source systems tend to share similar loading methods and properties between tables_, and this allows us to operate on those similar sets easily.
 - **Filenames**: `[layer_prefix_stg]\_[source]\_\_[entity]s.sql` - They should include a prefix for the layer the model exists in, important grouping information, and specific information about the entity or transformation in the model.
+
   - **Use PLURALS**: match with prose. Unless their is only one _order_ in your table, it should be named _Orders_
 
 ### Models
 
 - _Every staging model should **follow this pattern:** 2 CTES that..._
+
   - Pull in a source table via the source macro
   - Apply our transformations
+
 - **ONLY place where the `source` macro is used**
 - _**Standard transformations** are handled here_
+
   - Renaming
   - Type casting
   - Basic computations (e.g. cents to dollars)
   - Categorizing (using conditional logic to group values into buckets or booleans, using a `successful` status as true)
+
 - **Staging Models should avoid...**
+
   - **Joins**: we are creating a modular component in staging (our atom) and joins will complicate and create additional computation/confusing relationships dowstream that are better handled elsewhere
   - **Aggregations**: again, this is our atom/building block. By aggregating, you start losing access to some of the source data that is likely needed in other places
+
 - **Materialized as VIEWS**: this is for 2 key reasons:
+
   1. A view will pull the latest data so all downstream models will get the latest and greatest
   2. Space is not wasted in the warehouse on these that are not intended for downstream consumers that need performance
+
 - **1:1 Mapping of Source Table to Staging Tables**
 - _Handle all major transformations **as early upstream as possible**_: this reduces complexity and processing needed downstream
 
@@ -106,7 +115,7 @@ renamed as (
 select * from renamed
 ```
 
----
+--------------------------------------------------------------------------------
 
 ## [Intermediate Layer | Purpose-built Transformation Steps](https://docs.getdbt.com/best-practices/how-we-structure/3-intermediate)
 
@@ -134,11 +143,16 @@ models/intermediate
 
 ### Purposes
 
-- **Structual Simplification**
+- **Structural Simplification**
+
   - Bringing 4-6 models/entities/concepts together in a single model in staging and joining with a similar table in a `mart` is much less complex than having 10 joins in a `mart`. It makes more sense to have 2 smaller, readable, testable components than to have a massive monolith of a model in a `mart`
+
 - **Re-graining**
+
   - Often used to fan out or collapse to the correct grain (i.e. a row for each order, summarizing orders by employee)
+
 - **Isolating Complex Operations**
+
   - This makes the models easier to refine, troubleshoot, and simplifies later models that reference this complex concept in a clearly readable way.
 
 #### Exceptions
@@ -173,7 +187,7 @@ pivot_and_aggregate_payments_to_order_grain as (
 select * from pivot_and_aggregate_payments_to_order_grain
 ```
 
----
+--------------------------------------------------------------------------------
 
 ## [Mart (Entity/Concept) Layer | Business-defined Entities](https://docs.getdbt.com/best-practices/how-we-structure/4-marts)
 
@@ -194,7 +208,7 @@ models/marts
 
 ### Note on the dbt Semantic layer
 
-`dbt` offers a _Semantic_ layer in the `dbt Cloud` solution. In the _Semantic Layer_(https://docs.getdbt.com/docs/use-dbt-semantic-layer/dbt-sl) ([FAQs](https://docs.getdbt.com/docs/use-dbt-semantic-layer/sl-faqs)) users are able to create dynamic SL to compute metrics as well as define custom metrics. In this case, you'd want your `mart` level to be as **normalized** as possible. The rest of this readme will assume it is **NOT** being used.
+`dbt` offers a _Semantic_ layer in the `dbt Cloud` solution. In the _Semantic Layer_(<https://docs.getdbt.com/docs/use-dbt-semantic-layer/dbt-sl>) ([FAQs](https://docs.getdbt.com/docs/use-dbt-semantic-layer/sl-faqs)) users are able to create dynamic SL to compute metrics as well as define custom metrics. In this case, you'd want your `mart` level to be as **normalized** as possible. The rest of this readme will assume it is **NOT** being used.
 
 ### Files and Folders
 
@@ -205,7 +219,9 @@ models/marts
 ### Models
 
 - **Materialized as Tables or incremental models**: by having these as a table in our Data Warehouses, it reduces costly recompute of all the chains of models we've created to get here whenever a user refreshes their dashboard.
+
   - A good practice is to use a **view** until it takes too long to practically query, then a **table**...and then an **incremental model**
+
 - **Wide and denormalized**: with cheap storage and compute expensive, all the data should be ready to go and available
 - **Avoid too many Joins**: As mentioned in the Intermediate section above, reducing complexity is extremely important when it comes to readability and building a clear mental model of what is happening.
 - **Build / Reuse separate marts _Thoughtfully_**: again, while the strategy is to get a narrow DAG, including a mart in another mart's generation may be necessary (such as using an `orders` mart as part of building the `customer` mart to get critical order data.)
@@ -237,13 +253,13 @@ orders_and_order_payments_joined as (
 select * from orders_and_payments_joined
 ```
 
----
+--------------------------------------------------------------------------------
 
 ## Utilities
 
 - Helpful general purpose models that we generate from macros or based on seeds that provide tools to **help us do our modeling**, rather than data to model itself. The most common use case is a _date spine_ generated with the dbt utils package.
 
----
+--------------------------------------------------------------------------------
 
 ## YAML Structure
 
@@ -253,13 +269,15 @@ select * from orders_and_payments_joined
 ### Best Practices
 
 - **One config / folder**: `_<dir_name>__models.yml` should configure all models in the directory
+
   - For `staging` you'll need one for sources also (per directory): `_<dir_name>__sources.yml`
   - The leading `_` ensures it's always at the top and easy to separate from models
   - This is considered the most balanced approach as it avoids a _monolythic single config for the entire project_ that is hard to manage and find information in as well as doesn't slow down development and add overly cumbersome busy work in the _single config per model_ approach.
+
 - **For docs, follow the same pattern**: `_<dir_name>__docs.md` will ensure your documentation is also easy to find and consistent.
 - **Cascade configs**: use `dbt_project.yml` to set default configurations at the directory level (i.e. materialization of `mart` models as tables) and then special conditions can be broken down at the model level. By doing this, we reduce on redundancy and needing to define multiple things in lower-level configs.
 
----
+--------------------------------------------------------------------------------
 
 ## Other folders in a dbt project: tests, seeds, and analyses
 
