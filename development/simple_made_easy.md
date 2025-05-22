@@ -40,19 +40,19 @@
     * Maintenance change
 * _We must assess constructs by their artifacts_
 
-## Limits
+## Human Limits
 * We can only hope to make things reliable IF we UNDERSTAND those things
 * We can only UNDERSTAND a few things at a time
 * Intertwined/interleaved/braided things MUST be UNDERSTOOD TOGETHER
 * _Complexity Undermines UNDERSTANDING_
 
-## Change - _New Capabilities_
+## Software Updates/Changes - _New Capabilities_
 * Changes to software require analysis and decisions
 * What will be impacted?
 * Where do changes need to be made?
 * Your ability to UNDERSTAND and THINK/REASON about your software is critical to changing it without fear
 
-## Debugging - _Fixing Issues_
+## Software Debugging - _Fixing Issues_
 * True of every bug? _It passed all the tests_
 * Tests are like guardrails, they catch some things, but we don't drive our cars purposefully hitting guardrails
 
