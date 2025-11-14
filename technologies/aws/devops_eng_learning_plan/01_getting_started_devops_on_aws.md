@@ -42,7 +42,7 @@
 - Development
     - IDE - AWS Cloud9, VS Code
     - SDKs - AWS SDK for Java
-    - Source code repositories: AWS CodeCommit, Github
+    - Source code repositories: ~AWS CodeCommit~, Github
 - CI/CD
     - Build Tools: AWS CodeBuild, Jenkins, Databricks, CircleCI
     - Deployment Tools: AWS CodeDeploy, AWS CloudFormation
@@ -56,4 +56,39 @@ Containers and Serverless: FOCUS ON APPLICATION, not on the details of the host 
         - Orchestration: Amazon Elastic Container Service (ECS), Kubernetes, Amazon Elastic Kubernetes Service (Amazon EKS)
 Monitoring and Observability
     - AWS X-Ray, Amazon Cloudwatch, AWS Config, AWS CloudTrail
+- AWS Tooling
+    - INFRASTRUCTURE - AWS CloudFormation - used to create infrastructure and supporting resources for dev environments
+    - DEVELOPMENT - AWS Cloud9 to write, run and debug code as well as make changes to code in an ~AWS CodeCommit~ repo
+    - CODE - ~AWS CodeCommit - securely store and source control code~ CodeCommit is deprecated and so another source should be used
+    - BUILD / TEST - AWS CodeBuild - automatically compile source code, run tests, produce packages ready to deploy, scales to meet your build volume, can run separate builds concurrently
+    - DEPLOY - AWS CodeDeploy - fully managed deployment service that automates software deployments to compute services such as Amazon EC2, AWS Fargate, AWS Lambda, or on-prem servers
+    - MONITOR 
+        - AWS X-Ray - Collect data about requests your application serves and provide tools to view, filter, and gain insights into issues and optimizations
+        - Amazon CloudWatch - monitors AWS resources and applications ran on AWS in real time. Can use to collect and track metrics
+    - **WORKFLOW / PIPELINE | AWS CodePipeline** - continuous delivery service that helps you automate your release pipelines for fast and reliable application/infrastructure updates. Automates build, test, and deploy of your release process every time there is a code change (based on the release model you define). Will enhance your ability to further integrate with other AWS and third-party products
+    - Amazon Elastic Container Service allows you to use docker containers to easily run application on Elastic Compute Cloud (EC2) instances. No need to install, operate, and scale container management software.
+    - Amazon EC2 (Elastic Compute Cloud) hosts webpages / is a web service that provides secure, resizable compute capacity in the cloud.
+    - Monitoring:
+        - AWS X-Ray - distributed tracing system
+        - Amazon cloudwatch - data and actionable insights for AWS resources
+        - AWS Config - assess, audit, and evaluate configurations for AWS resources
+        - AWS CloudTrail - enables governance, compliance, operational auditing, and risk auditing of AWS account
+
+### Demo
+- Explain how to use AWS CodeDeploy to deploy web applications to Amazon Elastic Compute Cloud (Amazon EC2) servers in multiple Regions. 
+- Explain how to use AWS CodePipeline to establish a continuous integration and perform continuous deployment to multiple Regions.
+- Demo pipeline deploys to 2 regions - region 1 is used to test and, when good to go, can pass the manual check and deploy the changes
+
+
+
+
+
+
+
+
+
+
+
+
+
 

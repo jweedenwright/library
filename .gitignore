@@ -5,4 +5,6 @@ consulting.md
 .prettierrc
 codereview/*.md
 helpers/training
-partners/*
+partners*
+keys*
+technologies/aws/udemy/code_v2025-10-27*
